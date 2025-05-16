@@ -1,10 +1,10 @@
-package service;
+package com.progettomedusa.user_service.service;
 
-import dto.UserDTO;
-import model.converter.MainConverter;
-import model.user.User;
+import com.progettomedusa.user_service.dto.UserDTO;
+import com.progettomedusa.user_service.model.converter.MainConverter;
+import com.progettomedusa.user_service.model.user.User;
 import org.springframework.stereotype.Service;
-import repository.UserRepository;
+import com.progettomedusa.user_service.repository.UserRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;

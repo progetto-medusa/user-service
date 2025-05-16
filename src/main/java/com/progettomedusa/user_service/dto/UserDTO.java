@@ -1,28 +1,13 @@
-package model.user;
+package com.progettomedusa.user_service.dto;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "user")
-
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class UserDTO {
     private Long id;
-
-    @Column(nullable = false)
     private String name;
-
-    @Column(nullable = false, unique = true)
     private String email;
-
-    @Column(nullable = false)
     private String password;
-
-    @Column(nullable = false)
     private String role;
 
-    public User(Long id, String name, String email, String password, String role){
+    public UserDTO(Long id, String name, String email, String password, String role) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -41,5 +26,7 @@ public class User {
     public void setEmail(String email) {this.email = email;}
     public void setPassword(String password) {this.password = password;}
     public void setRole(String role) {this.role = role;}
-}
 
+
+
+}

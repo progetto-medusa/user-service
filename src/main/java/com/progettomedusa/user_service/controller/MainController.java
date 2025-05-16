@@ -1,11 +1,11 @@
-package controller;
+package com.progettomedusa.user_service.controller;
 
-import dto.UserDTO;
-import model.user.User;
+import com.progettomedusa.user_service.dto.UserDTO;
+import com.progettomedusa.user_service.model.user.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import service.UserService;
+import com.progettomedusa.user_service.service.UserService;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class MainController {
         this.userService = userService;
     }
 
-    @PostMapping
+    @PostMapping("/user")
     public ResponseEntity<String> createUser(@RequestBody UserDTO userDTO) {
         try {
             User user = userService.createUser(userDTO);
@@ -38,7 +38,7 @@ public class MainController {
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/user/{id}")
     public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
         try {
             User user = userService.updateUser(id, userDTO);
@@ -48,7 +48,7 @@ public class MainController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/user/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
         try {
             userService.deleteUser(id);

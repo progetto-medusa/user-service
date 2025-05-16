@@ -1,7 +1,7 @@
-package model.converter;
+package com.progettomedusa.user_service.model.converter;
 
-import dto.UserDTO;
-import model.user.User;
+import com.progettomedusa.user_service.dto.UserDTO;
+import com.progettomedusa.user_service.model.user.User;
 
 public class MainConverter {
 

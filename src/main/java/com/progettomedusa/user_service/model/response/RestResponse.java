@@ -1,4 +1,4 @@
-package model.response;
+package com.progettomedusa.user_service.model.response;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
