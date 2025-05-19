@@ -10,7 +10,6 @@ public class MainConverter {
             return null;
 
         return new UserDTO(
-                user.getId(),
                 user.getName(),
                 user.getEmail(),
                 user.getPassword(),
@@ -23,7 +22,6 @@ public class MainConverter {
         }
 
         return new User(
-                userDTO.getId(),
                 userDTO.getName(),
                 userDTO.getEmail(),
                 userDTO.getPassword(),
