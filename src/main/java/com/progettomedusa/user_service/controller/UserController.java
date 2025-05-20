@@ -2,6 +2,7 @@ package com.progettomedusa.user_service.controller;
 
 import com.progettomedusa.user_service.dto.UserDTO;
 import com.progettomedusa.user_service.model.user.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,12 +15,15 @@ import java.util.List;
 @RestController
 public class UserController {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
-    private final UserService userService;
 
-    public UserController(UserService userService) {
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    @Autowired
+    UserService userService;
+
+   // private final UserService userService;
+   /* public UserController(UserService userService) {
         this.userService = userService;
-    }
+    }*/
 
     @PostMapping("/user")
     public ResponseEntity<String> createUser(@RequestBody UserDTO userDTO) {

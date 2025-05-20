@@ -3,24 +3,34 @@ package com.progettomedusa.user_service.service;
 import com.progettomedusa.user_service.dto.UserDTO;
 import com.progettomedusa.user_service.model.converter.UserConverter;
 import com.progettomedusa.user_service.model.user.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.progettomedusa.user_service.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class UserService {
-    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
-    private final UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
+    @Autowired
+    UserRepository userRepository;
+
+  //  private final UserRepository userRepository;
+
+    @Autowired
+    UserConverter userConverter;
+
+   /* public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-    }
+    }*/
 
     public User createUser(UserDTO userDTO) {
-        User user = UserConverter.toEntity(userDTO);
+        User user = userConverter.toEntity(userDTO);
         logger.debug("DTO convertito in entità User: " + user);
         return userRepository.save(user);
     }
@@ -32,9 +42,17 @@ public class UserService {
                 .map(MainConverter::userDTO)
                 .collect(Collectors.toList());
     }*/
+
     //metodo nuovo creato nel repository per sostituire lo stream
     public List<UserDTO> getAllUsers() {
-        return userRepository.findAllProjectedBy();
+        List<User> allProjectedBy = userRepository.findAllProjectedBy();
+
+        List<UserDTO> responseDto = new ArrayList<>();
+
+        for (User user : allProjectedBy) {
+            responseDto.add(userConverter.userDTO(user));
+        }
+        return responseDto;
     }
 
     public User updateUser(Long id, UserDTO userDTO) {

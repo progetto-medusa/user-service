@@ -2,10 +2,12 @@ package com.progettomedusa.user_service.model.converter;
 
 import com.progettomedusa.user_service.dto.UserDTO;
 import com.progettomedusa.user_service.model.user.User;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UserConverter {
 
-    public static UserDTO userDTO(User user){
+    public UserDTO userDTO(User user){
         if(user==null)
             return null;
 
@@ -16,7 +18,7 @@ public class UserConverter {
                 user.getRole()
         );
     }
-    public static User toEntity(UserDTO userDTO) {
+    public User toEntity(UserDTO userDTO) {
         if (userDTO == null) {
             return null;
         }
