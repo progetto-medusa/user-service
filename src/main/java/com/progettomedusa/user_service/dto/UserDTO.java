@@ -23,6 +23,14 @@ public class UserDTO {
     public void setPassword(String password) {this.password = password;}
     public void setRole(String role) {this.role = role;}
 
+    @Override
+    public String toString(){
+        return "UserDTO{" +
+                "name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", role='" + role + '\'' +
+                '}';
 
-
+    }
 }

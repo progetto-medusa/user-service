@@ -3,7 +3,7 @@ package com.progettomedusa.user_service.model.converter;
 import com.progettomedusa.user_service.dto.UserDTO;
 import com.progettomedusa.user_service.model.user.User;
 
-public class MainConverter {
+public class UserConverter {
 
     public static UserDTO userDTO(User user){
         if(user==null)
