@@ -3,27 +3,23 @@ package com.progettomedusa.user_service.service;
 import com.progettomedusa.user_service.dto.UserDTO;
 import com.progettomedusa.user_service.model.converter.UserConverter;
 import com.progettomedusa.user_service.model.user.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.progettomedusa.user_service.repository.UserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
+@RequiredArgsConstructor
 @Service
 public class UserService {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
-
-    @Autowired
-    UserRepository userRepository;
+    private final UserConverter userConverter;
+    private final UserRepository userRepository;
 
   //  private final UserRepository userRepository;
-
-    @Autowired
-    UserConverter userConverter;
 
    /* public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -31,7 +27,7 @@ public class UserService {
 
     public User createUser(UserDTO userDTO) {
         User user = userConverter.toEntity(userDTO);
-        logger.debug("DTO convertito in entità User: " + user);
+        log.debug("DTO convertito in entità User: " + user);
         return userRepository.save(user);
     }
 
@@ -56,7 +52,7 @@ public class UserService {
     }
 
     public User updateUser(Long id, UserDTO userDTO) {
-        logger.debug("Sono nel service per fare le modifiche");
+        log.debug("Sono nel service per fare le modifiche");
         User currentUser = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Utente non trovato, id: " + id));
 
@@ -69,7 +65,7 @@ public class UserService {
     }
 
     public void deleteUser(Long id) {
-        logger.debug("Sono nel service per l'eliminazione");
+        log.debug("Sono nel service per l'eliminazione");
         if (!userRepository.existsById(id)) {
             throw new RuntimeException("Utente non trovato, con id: " + id);
         }

@@ -3,7 +3,12 @@ package com.progettomedusa.user_service.model.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Size;
-
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+@Getter
+@Setter
+@NoArgsConstructor
 public class RestResponse {
     @JsonProperty("message")
     @Size(max = 2048)
@@ -21,38 +26,4 @@ public class RestResponse {
     @Size(max = 1024)
     private String timestamp;
 
-    public RestResponse() {
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public String getDomain() {
-        return domain;
-    }
-
-    public void setDomain(String domain) {
-        this.domain = domain;
-    }
-
-    public String getDetailed() {
-        return detailed;
-    }
-
-    public void setDetailed(String detailed) {
-        this.detailed = detailed;
-    }
-
-    public String getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
-    }
 }

@@ -4,6 +4,7 @@ import com.progettomedusa.user_service.dto.UserDTO;
 import com.progettomedusa.user_service.model.user.User;
 import org.springframework.stereotype.Component;
 
+
 @Component
 public class UserConverter {
 
@@ -24,6 +25,7 @@ public class UserConverter {
         }
 
         return new User(
+                null,
                 userDTO.getName(),
                 userDTO.getEmail(),
                 userDTO.getPassword(),
