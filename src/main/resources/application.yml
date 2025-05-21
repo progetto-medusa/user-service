@@ -20,3 +20,9 @@ logging:
     root: INFO
     com:
      progettomedusa: DEBUG
+
+security:
+  licensed-apps:
+    - local-postman
+    - app2
+    - app3
