@@ -12,24 +12,23 @@ public class UserConverter {
         if(user==null)
             return null;
 
-        return new UserDTO(
-                user.getName(),
-                user.getEmail(),
-                user.getPassword(),
-                user.getRole()
-        );
+        UserDTO userDTO = new UserDTO();
+        userDTO.setName(user.getName());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setPassword(user.getPassword());
+        userDTO.setRole(user.getRole());
+        return userDTO;
     }
     public User toEntity(UserDTO userDTO) {
         if (userDTO == null) {
             return null;
         }
 
-        return new User(
-                null,
-                userDTO.getName(),
-                userDTO.getEmail(),
-                userDTO.getPassword(),
-                userDTO.getRole()
-        );
+        User user = new User();
+        user.setName(userDTO.getName());
+        user.setEmail(userDTO.getEmail());
+        user.setPassword(userDTO.getPassword());
+        user.setRole(userDTO.getRole());
+        return user;
     }
 }
