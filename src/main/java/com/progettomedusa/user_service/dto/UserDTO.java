@@ -7,9 +7,9 @@ import lombok.*;
 @AllArgsConstructor
 @ToString(exclude="password")
 public class UserDTO {
+    private Long id;
     private String name;
     private String email;
     private String password;
     private String role;
-
 }

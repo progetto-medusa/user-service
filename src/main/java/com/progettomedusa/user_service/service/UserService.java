@@ -19,11 +19,6 @@ public class UserService {
     private final UserConverter userConverter;
     private final UserRepository userRepository;
 
-  //  private final UserRepository userRepository;
-
-   /* public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }*/
 
     public User createUser(UserDTO userDTO) {
         User user = userConverter.toEntity(userDTO);
@@ -31,15 +26,6 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    //stream usato nel primo approccio
-  /*  public List<UserDTO> getAllUsers(){
-        return userRepository.findAll()
-                .stream()
-                .map(MainConverter::userDTO)
-                .collect(Collectors.toList());
-    }*/
-
-    //metodo nuovo creato nel repository per sostituire lo stream
     public List<UserDTO> getAllUsers() {
         List<User> allProjectedBy = userRepository.findAllProjectedBy();
 
