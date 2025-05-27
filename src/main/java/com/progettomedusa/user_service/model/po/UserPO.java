@@ -1,4 +1,4 @@
-package com.progettomedusa.user_service.model.user;
+package com.progettomedusa.user_service.model.po;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import lombok.AllArgsConstructor;
 @Entity
 @Table(name = "user")
 
-public class User {
+public class UserPO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

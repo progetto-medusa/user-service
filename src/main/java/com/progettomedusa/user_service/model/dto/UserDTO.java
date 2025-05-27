@@ -1,4 +1,4 @@
-package com.progettomedusa.user_service.dto;
+package com.progettomedusa.user_service.model.dto;
 import lombok.*;
 
 @Getter
@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @ToString(exclude="password")
 public class UserDTO {
-    private Long id;
+    private String id;
     private String name;
     private String email;
     private String password;

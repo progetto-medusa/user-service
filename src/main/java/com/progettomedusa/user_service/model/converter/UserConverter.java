@@ -1,95 +1,151 @@
 package com.progettomedusa.user_service.model.converter;
 
 import com.progettomedusa.user_service.config.AppProperties;
-import com.progettomedusa.user_service.dto.UserDTO;
-import com.progettomedusa.user_service.model.response.RestResponse;
-import com.progettomedusa.user_service.model.user.User;
+import com.progettomedusa.user_service.model.dto.UserDTO;
+import com.progettomedusa.user_service.model.po.UserPO;
+import com.progettomedusa.user_service.model.request.CreateUserRequest;
+import com.progettomedusa.user_service.model.request.UpdateUserRequest;
+import com.progettomedusa.user_service.model.response.*;
 import com.progettomedusa.user_service.util.Tools;
 import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.progettomedusa.user_service.util.Constants.*;
 
 @Slf4j
 @RequiredArgsConstructor
 @Component
     public class UserConverter {
 
-        private final Tools tools;
-        private final AppProperties appProperties;
+    private final Tools tools;
+    private final AppProperties userApplicationProperties;
 
-        public RestResponse retrieveRestResponseForRootPath(UserDTO userDTO) {
-            log.debug("Converter - Retrieve rest response for root path START with user DTO -> {}", userDTO);
+    public UserDTO createRequestToUserDTO(CreateUserRequest createUserRequest){
+        UserDTO userDTO = new UserDTO();
+        userDTO.setName(createUserRequest.getName());
+        userDTO.setPassword(createUserRequest.getPassword());
+        userDTO.setEmail(createUserRequest.getEmail());
+        userDTO.setRole(createUserRequest.getRole());
+        log.info("UserConverter - createRequestToUserDTO END with DTO -> {}", userDTO);
+        return userDTO;
+    }
 
-            RestResponse restResponse = new RestResponse();
+    public CreateRequestResponse createRequestResponse(UserPO userCreated){
+        CreateRequestResponse createRequestResponse = new CreateRequestResponse();
+        createRequestResponse.setMessage("Creation done");
+        createRequestResponse.setDomain(userApplicationProperties.getName());
+        createRequestResponse.setTimestamp(tools.getInstant());
+        createRequestResponse.setEmail(userCreated.getEmail());
+        createRequestResponse.setName(userCreated.getName());
+        log.info("UserConverter - createRequestResponse END with createRequestResponse -> {}", createRequestResponse);
+        return createRequestResponse;
+    }
 
-            restResponse.setMessage("Service is ONLINE");
-            restResponse.setDomain(appProperties.getName());
-            restResponse.setDetailed("Called for user -> " + userDTO.getName());
-            restResponse.setTimestamp(tools.getInstant());
+    public CreateRequestResponse createRequestResponse(Exception e){
+        CreateRequestResponse createRequestResponse = new CreateRequestResponse();
+        createRequestResponse.setMessage(e.getMessage());
+        createRequestResponse.setDomain(userApplicationProperties.getName());
+        createRequestResponse.setTimestamp(tools.getInstant());
+        createRequestResponse.setDetailed(BASE_ERROR_DETAILS);
+        log.info("UserConverter - createRequestResponse END with createRequestResponse -> {}", createRequestResponse);
+        return createRequestResponse;
+    }
 
-            log.debug("Converter - Retrieve rest response for root path END with DTO -> {}", restResponse);
-            return restResponse;
+    public UserPO dtoToPo(UserDTO userDTO) {
+        UserPO userPO = new UserPO();
+        if(userDTO.getId() != null){
+            userPO.setId(Long.valueOf(userDTO.getId()));
+        }
+        userPO.setName(userDTO.getName());
+        userPO.setEmail(userDTO.getEmail());
+        userPO.setPassword(userDTO.getPassword());
+        userPO.setRole(userDTO.getRole());
+        log.info("UserConverter - createRequestToUserDTO END with PO -> {}", userPO);
+        return userPO;
+    }
+
+    public GetUsersResponse listOfUsersGetUsersResponse(List<UserPO> userList){
+        GetUsersResponse getUsersResponse = new GetUsersResponse();
+
+        List<GetUserResponse> getUserResponseList = new ArrayList<>();
+
+        for (UserPO user : userList) {
+            GetUserResponse getUserResponse = userPoToGetUserResponse(user, true);
+            getUserResponseList.add(getUserResponse);
         }
 
-        public UserDTO userDTO(User user) {
-            log.debug("Converter - Converting User entity to UserDTO START for user -> {}", user);
+        getUsersResponse.setUsers(getUserResponseList);
+        getUsersResponse.setDomain(userApplicationProperties.getName());
+        getUsersResponse.setTimestamp(tools.getInstant());
 
-            if (user == null) {
-                log.warn("Converter - Input User entity is null");
-                return null;
-            }
+        log.info("UserConverter - listOfUsersoGetUsersResponse END with response -> {}", getUsersResponse);
+        return getUsersResponse;
+    }
 
-            UserDTO userDTO = new UserDTO();
-            userDTO.setId(user.getId());
-            userDTO.setName(user.getName());
-            userDTO.setEmail(user.getEmail());
-            userDTO.setPassword(user.getPassword());
-            userDTO.setRole(user.getRole());
+    public GetUserResponse userPoToGetUserResponse(UserPO userPO, boolean internal){
+        GetUserResponse getUserResponse = new GetUserResponse();
 
-            log.debug("Converter - Converting User entity to UserDTO END with DTO -> {}", userDTO);
-            return userDTO;
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(String.valueOf(userPO.getId()));
+        userResponse.setRole(userPO.getRole());
+        userResponse.setName(userPO.getName());
+        userResponse.setEmail(userPO.getEmail());
+
+        getUserResponse.setUser(userResponse);
+        if(!internal) {
+            getUserResponse.setDomain(userApplicationProperties.getName());
+            getUserResponse.setTimestamp(tools.getInstant());
         }
+        log.info("UserConverter - userPoToGetUserResponse END with response -> {}", getUserResponse);
+        return getUserResponse;
+    }
 
-        public User toEntity(UserDTO userDTO) {
-            log.debug("Converter - Converting UserDTO to User entity START for DTO -> {}", userDTO);
+    public GetUserResponse getUserResponse(){
+        GetUserResponse getUserResponse = new GetUserResponse();
+        getUserResponse.setUser(new UserResponse());
+        getUserResponse.setMessage(USER_NOT_FOUND_MESSAGE);
+        getUserResponse.setDomain(userApplicationProperties.getName());
+        getUserResponse.setTimestamp(tools.getInstant());
+        log.info("UserConverter - getUserResponse END with getUserResponse -> {}", getUserResponse);
+        return getUserResponse;
+    }
 
-            if (userDTO == null) {
-                log.warn("Converter - Input UserDTO is null");
-                return null;
-            }
+    public UserDTO updateRequestToDto(UpdateUserRequest updateUserRequest){
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(updateUserRequest.getId());
+        userDTO.setName(updateUserRequest.getName());
+        userDTO.setPassword(updateUserRequest.getPassword());
+        userDTO.setEmail(updateUserRequest.getEmail());
+        userDTO.setRole(updateUserRequest.getRole());
+        log.info("UserConverter - updateRequestToDto END with DTO -> {}", userDTO);
+        return userDTO;
+    }
 
-            User user = new User();
-            user.setId(userDTO.getId());
-            user.setName(userDTO.getName());
-            user.setEmail(userDTO.getEmail());
-            user.setPassword(userDTO.getPassword());
-            user.setRole(userDTO.getRole());
+    public UpdateUserResponse userToUpdateResponse(UserPO userPO){
+        UserResponse userResponse = new UserResponse();
+        userResponse.setEmail(userPO.getEmail());
+        userResponse.setName(userPO.getName());
 
-            log.debug("Converter - Converting UserDTO to User entity END with entity -> {}", user);
-            return user;
-        }
+        UpdateUserResponse updateUserResponse = new UpdateUserResponse();
+        updateUserResponse.setMessage("Update done");
+        updateUserResponse.setDomain(userApplicationProperties.getName());
+        updateUserResponse.setTimestamp(tools.getInstant());
+        updateUserResponse.setUser(userResponse);
 
-        public RestResponse buildGetUserResponse(List<User> userList, UserDTO userDTO) {
-            log.debug("Converter - Build Get User Response START with User List -> {}, DTO -> {}", userList, userDTO);
+        log.info("UserConverter - userToUpdateResponse END with updateUserResponse -> {}", updateUserResponse);
+        return updateUserResponse;
+    }
 
-            RestResponse restResponse = new RestResponse();
-
-            restResponse.setMessage("Users list retrieved successfully");
-            restResponse.setDomain(appProperties.getName());
-
-            try {
-                restResponse.setDetailed("Requested by: " + userDTO.getName());
-            } catch (NullPointerException e) {
-                restResponse.setDetailed("Requested by: Anonymous");
-            }
-
-            restResponse.setTimestamp(tools.getInstant());
-
-            log.debug("Converter - Build Get User Response END with Response -> {}", restResponse);
-            return restResponse;
-        }
-
-
-
+    public DeleteUserResponse deleteUserResponse(){
+        DeleteUserResponse deleteUserResponse = new DeleteUserResponse();
+        deleteUserResponse.setMessage(USER_DELETED_MESSAGE);
+        deleteUserResponse.setDomain(userApplicationProperties.getName());
+        deleteUserResponse.setTimestamp(tools.getInstant());
+        log.info("UserConverter - deleteUserResponse END with deleteUserResponse -> {}", deleteUserResponse);
+        return deleteUserResponse;
+    }
 }

@@ -1,12 +1,15 @@
 package com.progettomedusa.user_service.controller;
 
 import com.progettomedusa.user_service.config.AppProperties;
-import com.progettomedusa.user_service.dto.UserDTO;
+import com.progettomedusa.user_service.model.dto.UserDTO;
 import com.progettomedusa.user_service.model.converter.UserConverter;
-import com.progettomedusa.user_service.model.response.RestResponse;
-import com.progettomedusa.user_service.model.user.User;
+import com.progettomedusa.user_service.model.po.UserPO;
+import com.progettomedusa.user_service.model.request.CreateUserRequest;
+import com.progettomedusa.user_service.model.request.UpdateUserRequest;
+import com.progettomedusa.user_service.model.response.*;
 import com.progettomedusa.user_service.util.Tools;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,8 +17,7 @@ import com.progettomedusa.user_service.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.List;
+import static com.progettomedusa.user_service.util.Constants.USER_NOT_FOUND_MESSAGE;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -28,70 +30,58 @@ public class UserController {
     private final AppProperties appProperties;
 
 
-    @GetMapping("/users")
-    public ResponseEntity<Object> getAllUsers(HttpServletRequest httpServletRequest) {
-        log.info("Controller - Recupero lista utenti: START");
-
-        List<UserDTO> userDTOs = userService.getAllUsers();
-
-        List<User> users = new ArrayList<>();
-
-        for (UserDTO userDTO : userDTOs) {
-            users.add(userConverter.toEntity(userDTO)); // Usa il metodo esistente toEntity
-        }
-        RestResponse getUsersResponse = userConverter.buildGetUserResponse(users, null);
-
-        log.info("Controller - Recupero lista utenti: DONE");
-        return new ResponseEntity<>(users, HttpStatus.OK);
-    }
-
-
-
     @PostMapping("/user")
-    public ResponseEntity<Object> createUser(HttpServletRequest httpServletRequest, @RequestBody UserDTO userDTO) {
-        log.info("Controller - Creazione utente: START");
-
-        userService.createUser(userDTO);
-
-        RestResponse restResponse = new RestResponse();
-        restResponse.setMessage("Utente creato con successo!");
-        restResponse.setDetailed("Nome utente creato: " + userDTO.getName());
-        restResponse.setDomain(appProperties.getName());
-        restResponse.setTimestamp(tools.getInstant());
-
-
-        log.info("Controller - Creazione utente: DONE");
-        return new ResponseEntity<>(restResponse, HttpStatus.CREATED);
+    public ResponseEntity<CreateRequestResponse> createUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
+        log.info("Controller - createUser START with request -> {}",createUserRequest);
+        UserDTO userDTO = userConverter.createRequestToUserDTO(createUserRequest);
+        CreateRequestResponse createRequestResponse = userService.createUser(userDTO);
+        log.info("Controller - createUser END with response -> {}",createRequestResponse);
+        return new ResponseEntity<>(createRequestResponse,HttpStatus.ACCEPTED);
     }
 
-    @PutMapping("/user/{id}")
-    public ResponseEntity<Object> updateUser(HttpServletRequest httpServletRequest, @PathVariable Long id, @RequestBody UserDTO userDTO) {
-        log.info("Controller - Aggiornamento utente con ID {}: START", id);
+    @GetMapping("/users")
+    public ResponseEntity<GetUsersResponse> getAllUsers() {
+        log.info("Controller - getUsers START");
+        GetUsersResponse getUsersResponse = userService.getUsers();
+        log.info("Controller - getUsers END with response -> {}", getUsersResponse);
 
-        userService.updateUser(id, userDTO);
+        if(getUsersResponse.getDetailed() == null){
+            return new ResponseEntity<>(getUsersResponse,HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(getUsersResponse,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
-        RestResponse restResponse = new RestResponse();
-        restResponse.setMessage("Utente aggiornato con successo!");
-        restResponse.setDetailed("ID utente aggiornato: " + id);
-        restResponse.setDomain(appProperties.getName());
-        restResponse.setTimestamp(tools.getInstant());
+    @GetMapping("/user/{id}")
+    public ResponseEntity<GetUserResponse> getUser(@PathVariable Long id) {
+        log.info("Controller - getUser START with id -> {}", id);
+        GetUserResponse getUserResponse = userService.getUser(id);
+        log.info("Controller - getUser END with response -> {}", getUserResponse);
 
-        log.info("Controller - Aggiornamento utente con ID {}: DONE", id);
-        return new ResponseEntity<>(restResponse, HttpStatus.OK);
+        if(getUserResponse.getMessage() == null){
+            return new ResponseEntity<>(getUserResponse,HttpStatus.OK);
+        }else if (getUserResponse.getMessage().equals(USER_NOT_FOUND_MESSAGE)) {
+            return new ResponseEntity<>(getUserResponse,HttpStatus.NOT_FOUND);
+        }else{
+            return new ResponseEntity<>(getUserResponse,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/user")
+    public ResponseEntity<UpdateUserResponse> updateUser(@RequestBody UpdateUserRequest updateUserRequest) {
+        log.info("Controller - updateUser START with id -> {}", updateUserRequest);
+        UserDTO userDTO = userConverter.updateRequestToDto(updateUserRequest);
+        UpdateUserResponse updateUserResponse = userService.updateUser(userDTO);
+        log.info("Controller - updateUser END with response -> {}", updateUserResponse);
+
+        return new ResponseEntity<>(updateUserResponse,HttpStatus.OK);
     }
 
     @DeleteMapping("/user/{id}")
-    public ResponseEntity<Object> deleteUser(HttpServletRequest httpServletRequest, @PathVariable Long id) {
-        log.info("Controller - Eliminazione utente con ID {}: START", id);
-        userService.deleteUser(id);
-
-        RestResponse restResponse = new RestResponse();
-        restResponse.setMessage("Utente eliminato con successo!");
-        restResponse.setDetailed("ID utente eliminato: " + id);
-        restResponse.setDomain(appProperties.getName());
-        restResponse.setTimestamp(tools.getInstant());
-
-        log.info("Controller - Eliminazione utente con ID {}: DONE", id);
-        return new ResponseEntity<>(restResponse, HttpStatus.OK);
+    public ResponseEntity<DeleteUserResponse> deleteUser(@PathVariable Long id) {
+        log.info("Controller - deleteUser START with id -> {}", id);
+        DeleteUserResponse deleteUserResponse = userService.deleteUser(id);
+        log.info("Controller - deleteUser END with response -> {}", deleteUserResponse);
+        return new ResponseEntity<>(deleteUserResponse,HttpStatus.ACCEPTED);
     }
 }
