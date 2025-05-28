@@ -82,4 +82,33 @@ public class UserService {
         return deleteUserResponse;
     }
 
+    public LoginResponse loginUser(UserDTO userDTO) {
+        log.info("Service - loginUser START with DTO -> {}", userDTO);
+
+        LoginResponse loginResponse;
+
+        try {
+            Optional<UserPO> optionalUser = userRepository.findByEmail(userDTO.getEmail());
+            if (optionalUser.isPresent()) {
+                UserPO userFound = optionalUser.get();
+                if (userFound.getPassword().equals(userDTO.getPassword())) {
+                    loginResponse = userConverter.userPoToLoginResponse(userFound);
+                } else if (userFound.getPassword() == null) {
+                    loginResponse = userConverter.userPoToLoginResponse(
+                            new Exception("WRONG_PASSWORD"));
+                } else {
+                    loginResponse = userConverter.userPoToLoginResponse(
+                            new Exception("WRONG_PASSWORD"));
+                }
+            } else {
+                loginResponse = userConverter.userPoToLoginResponse(
+                        new Exception("USER_NOT_FOUND"));
+            }
+        } catch (Exception e) {
+            log.error("Service - loginUser ERROR with message -> {}", e.getMessage());
+            loginResponse = userConverter.userPoToLoginResponse(e);
+        }
+        log.info("Service - loginUser END with response -> {}", loginResponse);
+        return loginResponse;
+    }
 }

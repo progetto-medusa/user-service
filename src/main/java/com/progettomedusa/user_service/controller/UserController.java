@@ -6,6 +6,7 @@ import com.progettomedusa.user_service.model.converter.UserConverter;
 import com.progettomedusa.user_service.model.po.UserPO;
 import com.progettomedusa.user_service.model.request.CreateUserRequest;
 import com.progettomedusa.user_service.model.request.UpdateUserRequest;
+import com.progettomedusa.user_service.model.request.LoginRequest;
 import com.progettomedusa.user_service.model.response.*;
 import com.progettomedusa.user_service.util.Tools;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,11 +33,11 @@ public class UserController {
 
     @PostMapping("/user")
     public ResponseEntity<CreateRequestResponse> createUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
-        log.info("Controller - createUser START with request -> {}",createUserRequest);
+        log.info("Controller - createUser START with request -> {}", createUserRequest);
         UserDTO userDTO = userConverter.createRequestToUserDTO(createUserRequest);
         CreateRequestResponse createRequestResponse = userService.createUser(userDTO);
-        log.info("Controller - createUser END with response -> {}",createRequestResponse);
-        return new ResponseEntity<>(createRequestResponse,HttpStatus.ACCEPTED);
+        log.info("Controller - createUser END with response -> {}", createRequestResponse);
+        return new ResponseEntity<>(createRequestResponse, HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/users")
@@ -45,10 +46,10 @@ public class UserController {
         GetUsersResponse getUsersResponse = userService.getUsers();
         log.info("Controller - getUsers END with response -> {}", getUsersResponse);
 
-        if(getUsersResponse.getDetailed() == null){
-            return new ResponseEntity<>(getUsersResponse,HttpStatus.OK);
-        }else {
-            return new ResponseEntity<>(getUsersResponse,HttpStatus.INTERNAL_SERVER_ERROR);
+        if (getUsersResponse.getDetailed() == null) {
+            return new ResponseEntity<>(getUsersResponse, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(getUsersResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -58,12 +59,12 @@ public class UserController {
         GetUserResponse getUserResponse = userService.getUser(id);
         log.info("Controller - getUser END with response -> {}", getUserResponse);
 
-        if(getUserResponse.getMessage() == null){
-            return new ResponseEntity<>(getUserResponse,HttpStatus.OK);
-        }else if (getUserResponse.getMessage().equals(USER_NOT_FOUND_MESSAGE)) {
-            return new ResponseEntity<>(getUserResponse,HttpStatus.NOT_FOUND);
-        }else{
-            return new ResponseEntity<>(getUserResponse,HttpStatus.INTERNAL_SERVER_ERROR);
+        if (getUserResponse.getMessage() == null) {
+            return new ResponseEntity<>(getUserResponse, HttpStatus.OK);
+        } else if (getUserResponse.getMessage().equals(USER_NOT_FOUND_MESSAGE)) {
+            return new ResponseEntity<>(getUserResponse, HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(getUserResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -74,7 +75,7 @@ public class UserController {
         UpdateUserResponse updateUserResponse = userService.updateUser(userDTO);
         log.info("Controller - updateUser END with response -> {}", updateUserResponse);
 
-        return new ResponseEntity<>(updateUserResponse,HttpStatus.OK);
+        return new ResponseEntity<>(updateUserResponse, HttpStatus.OK);
     }
 
     @DeleteMapping("/user/{id}")
@@ -82,6 +83,23 @@ public class UserController {
         log.info("Controller - deleteUser START with id -> {}", id);
         DeleteUserResponse deleteUserResponse = userService.deleteUser(id);
         log.info("Controller - deleteUser END with response -> {}", deleteUserResponse);
-        return new ResponseEntity<>(deleteUserResponse,HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(deleteUserResponse, HttpStatus.ACCEPTED);
+    }
+
+    @PostMapping("progetto-medusa/login")
+    public ResponseEntity<LoginResponse> loginUser(@RequestBody LoginRequest loginRequest) {
+        log.info("Controller - loginUser START with request -> {}", loginRequest);
+        UserDTO userDTO = userConverter.loginRequestToUserDTO(loginRequest);
+        LoginResponse response = userService.loginUser(userDTO);
+        if (response.getError() == null) {
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else if (response.getError().getMessage().equals("USER_NOT_FOUND")) {
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        } else if (response.getError().getMessage().equals("WRONG_PASSWORD")) {
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }else {
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
+

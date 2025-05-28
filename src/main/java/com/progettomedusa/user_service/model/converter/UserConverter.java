@@ -4,8 +4,10 @@ import com.progettomedusa.user_service.config.AppProperties;
 import com.progettomedusa.user_service.model.dto.UserDTO;
 import com.progettomedusa.user_service.model.po.UserPO;
 import com.progettomedusa.user_service.model.request.CreateUserRequest;
+import com.progettomedusa.user_service.model.request.LoginRequest;
 import com.progettomedusa.user_service.model.request.UpdateUserRequest;
 import com.progettomedusa.user_service.model.response.*;
+import com.progettomedusa.user_service.model.response.Error;
 import com.progettomedusa.user_service.util.Tools;
 import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
@@ -148,4 +150,38 @@ import static com.progettomedusa.user_service.util.Constants.*;
         log.info("UserConverter - deleteUserResponse END with deleteUserResponse -> {}", deleteUserResponse);
         return deleteUserResponse;
     }
+
+    public UserDTO loginRequestToUserDTO(LoginRequest loginRequest) {
+        UserDTO userDTO = new UserDTO();
+        String email = loginRequest.getEmail(); userDTO.setEmail(email);
+        if (email == null || !tools.isValidEmail(email)) {
+            log.warn("UserConverter - Email non valida o assente in LoginRequest: {}", email);
+        }
+        userDTO.setPassword(loginRequest.getPassword());
+        log.info("UserConverter - loginRequestToUserDTO END with DTO -> {}", userDTO);
+        return userDTO;
+    }
+
+    public LoginResponse userPoToLoginResponse(UserPO userPO) {
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setDomain(userApplicationProperties.getName());
+        loginResponse.setTimestamp(tools.getInstant());
+        log.info("UserConverter - userPoToLoginResponse END with LoginResponse -> {}", loginResponse);
+        return loginResponse;
+    }
+
+    public LoginResponse userPoToLoginResponse(Exception e){
+        LoginResponse loginResponse = new LoginResponse();
+        Error error = new Error();
+        error.setCode("CODECODECODE");
+        error.setMessage("Somethings gone wrong, check the documentation");
+        error.setDomain("MicroServiceFunctional");
+        error.setDetailed("Check on the docs with code, domain and status");
+        loginResponse.setTimestamp(tools.getInstant());
+        loginResponse.setDetailed(BASE_ERROR_DETAILS);
+        loginResponse.setError(error);
+        log.info("UserConverter - userPoToLoginResponse END with userPoToLoginResponse -> {}", loginResponse);
+        return loginResponse;
+    }
+
 }
