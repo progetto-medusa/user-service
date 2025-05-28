@@ -91,11 +91,10 @@ public class UserService {
             Optional<UserPO> optionalUser = userRepository.findByEmail(userDTO.getEmail());
             if (optionalUser.isPresent()) {
                 UserPO userFound = optionalUser.get();
+
                 if (userFound.getPassword().equals(userDTO.getPassword())) {
                     loginResponse = userConverter.userPoToLoginResponse(userFound);
-                } else if (userFound.getPassword() == null) {
-                    loginResponse = userConverter.userPoToLoginResponse(
-                            new Exception("WRONG_PASSWORD"));
+
                 } else {
                     loginResponse = userConverter.userPoToLoginResponse(
                             new Exception("WRONG_PASSWORD"));

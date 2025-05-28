@@ -183,5 +183,4 @@ import static com.progettomedusa.user_service.util.Constants.*;
         log.info("UserConverter - userPoToLoginResponse END with userPoToLoginResponse -> {}", loginResponse);
         return loginResponse;
     }
-
 }
