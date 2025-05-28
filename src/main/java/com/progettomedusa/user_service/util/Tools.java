@@ -14,4 +14,13 @@ public class Tools {
         DateTime dt = DateTime.now(DateTimeZone.UTC);
         return dt.toString(dateFormatter);
     }
+
+    public boolean isValidEmail(String email) {
+        if (email == null || email.isEmpty()) {
+            return false;
+        }
+        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+        return email.matches(emailRegex);
+    }
+
 }
