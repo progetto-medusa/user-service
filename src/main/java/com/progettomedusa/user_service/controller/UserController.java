@@ -3,6 +3,7 @@ package com.progettomedusa.user_service.controller;
 import com.progettomedusa.user_service.config.AppProperties;
 import com.progettomedusa.user_service.model.dto.UserDTO;
 import com.progettomedusa.user_service.model.converter.UserConverter;
+import com.progettomedusa.user_service.model.exception.ErrorMsg;
 import com.progettomedusa.user_service.model.po.UserPO;
 import com.progettomedusa.user_service.model.request.CreateUserRequest;
 import com.progettomedusa.user_service.model.request.UpdateUserRequest;
@@ -93,9 +94,9 @@ public class UserController {
         LoginResponse response = userService.loginUser(userDTO);
         if (response.getError() == null) {
             return new ResponseEntity<>(response, HttpStatus.OK);
-        } else if (response.getError().getMessage().equals("USER_NOT_FOUND")) {
+        } else if (ErrorMsg.USRSRV15.getCode().equals(response.getError().getCode())) {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        } else if (response.getError().getMessage().equals("WRONG_PASSWORD")) {
+        } else if (ErrorMsg.USRSRV14.getCode().equals(response.getError().getCode())) {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }else {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);

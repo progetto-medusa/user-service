@@ -32,6 +32,10 @@ public enum ErrorMsg {
 
     USRSRV13("USRSRV13", "Missing mandatory parameters", HttpStatus.BAD_REQUEST),
 
+    USRSRV14("USRSRV14", "Wrong password provided", HttpStatus.INTERNAL_SERVER_ERROR),
+
+    USRSRV15("USRSRV15", "User not found in the system", HttpStatus.NOT_FOUND),
+
     USRSRV69("USRSRV69", "Bad Request: missing parameters", HttpStatus.BAD_REQUEST),
 
     USRSRV99("USRSRV99", "Generic error", HttpStatus.INTERNAL_SERVER_ERROR);

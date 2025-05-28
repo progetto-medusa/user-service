@@ -96,12 +96,10 @@ public class UserService {
                     loginResponse = userConverter.userPoToLoginResponse(userFound);
 
                 } else {
-                    loginResponse = userConverter.userPoToLoginResponse(
-                            new Exception("WRONG_PASSWORD"));
+                    loginResponse = userConverter.userPoToLoginResponse("WRONG_PASSWORD");
                 }
             } else {
-                loginResponse = userConverter.userPoToLoginResponse(
-                        new Exception("USER_NOT_FOUND"));
+                loginResponse = userConverter.userPoToLoginResponse("USER_NOT_FOUND");
             }
         } catch (Exception e) {
             log.error("Service - loginUser ERROR with message -> {}", e.getMessage());

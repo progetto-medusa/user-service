@@ -2,6 +2,7 @@ package com.progettomedusa.user_service.model.converter;
 
 import com.progettomedusa.user_service.config.AppProperties;
 import com.progettomedusa.user_service.model.dto.UserDTO;
+import com.progettomedusa.user_service.model.exception.ErrorMsg;
 import com.progettomedusa.user_service.model.po.UserPO;
 import com.progettomedusa.user_service.model.request.CreateUserRequest;
 import com.progettomedusa.user_service.model.request.LoginRequest;
@@ -170,7 +171,26 @@ import static com.progettomedusa.user_service.util.Constants.*;
         return loginResponse;
     }
 
-    public LoginResponse userPoToLoginResponse(Exception e){
+    public LoginResponse userPoToLoginResponse(String message){
+        LoginResponse loginResponse = new LoginResponse();
+        Error error = new Error();
+        error.setCode("CODECODECODE");
+        if(message.equals("WRONG_PASSWORD")){
+            error.setCode(ErrorMsg.USRSRV14.getCode());
+            error.setMessage("Somethings gone wrong, check the documentation");
+        }else if(message.equals("USER_NOT_FOUND")){
+            error.setCode(ErrorMsg.USRSRV15.getCode());
+            error.setMessage("Somethings gone wrong, check the documentation");
+        }
+        error.setDomain("MicroServiceFunctional");
+        error.setDetailed("Check on the docs with code, domain and status");
+        loginResponse.setTimestamp(tools.getInstant());
+        loginResponse.setDetailed(BASE_ERROR_DETAILS);
+        loginResponse.setError(error);
+        log.info("UserConverter - userPoToLoginResponse END with userPoToLoginResponse -> {}", loginResponse);
+        return loginResponse;
+    }
+    public LoginResponse userPoToLoginResponse(Exception exception){
         LoginResponse loginResponse = new LoginResponse();
         Error error = new Error();
         error.setCode("CODECODECODE");
@@ -180,7 +200,6 @@ import static com.progettomedusa.user_service.util.Constants.*;
         loginResponse.setTimestamp(tools.getInstant());
         loginResponse.setDetailed(BASE_ERROR_DETAILS);
         loginResponse.setError(error);
-        log.info("UserConverter - userPoToLoginResponse END with userPoToLoginResponse -> {}", loginResponse);
         return loginResponse;
     }
 }
