@@ -4,6 +4,7 @@ import com.progettomedusa.user_service.model.dto.UserDTO;
 import com.progettomedusa.user_service.model.converter.UserConverter;
 import com.progettomedusa.user_service.model.po.UserPO;
 import com.progettomedusa.user_service.model.response.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.progettomedusa.user_service.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,14 +20,21 @@ import java.util.Optional;
 public class UserService {
     private final UserConverter userConverter;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public CreateRequestResponse createUser(UserDTO userDTO) {
         log.info("Service - createUser START with DTO -> {}",userDTO);
 
-        UserPO userToCreate = userConverter.dtoToPo(userDTO);
 
         CreateRequestResponse createRequestResponse;
         try {
+            log.debug("Service - codifica della password START");
+            String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
+            userDTO.setPassword(encodedPassword);
+            log.debug("Service - codifica della password END");
+
+            UserPO userToCreate = userConverter.dtoToPo(userDTO);
+
             UserPO userCreated = userRepository.save(userToCreate);
             createRequestResponse = userConverter.createRequestResponse(userCreated);
         }catch(Exception e){
@@ -92,7 +100,7 @@ public class UserService {
             if (optionalUser.isPresent()) {
                 UserPO userFound = optionalUser.get();
 
-                if (userFound.getPassword().equals(userDTO.getPassword())) {
+                if (passwordEncoder.matches(userDTO.getPassword(), userFound.getPassword())) {
                     loginResponse = userConverter.userPoToLoginResponse(userFound);
 
                 } else {
