@@ -1,5 +1,6 @@
 package com.progettomedusa.user_service.model.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -17,5 +18,6 @@ public class LoginRequest {
     @NotBlank
     private String password;
     @NotBlank
+    @JsonProperty("application_id")
     private String applicationId;
 }

@@ -4,6 +4,7 @@ import com.progettomedusa.user_service.model.dto.UserDTO;
 import com.progettomedusa.user_service.model.converter.UserConverter;
 import com.progettomedusa.user_service.model.po.UserPO;
 import com.progettomedusa.user_service.model.response.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.progettomedusa.user_service.repository.UserRepository;
@@ -97,8 +98,9 @@ public class UserService {
     public LoginResponse loginUser(UserDTO userDTO) {
         log.info("Service - loginUser START with DTO -> {}", userDTO);
 
-        String applicationId = userDTO.getApplicationId();
-        log.info("Application ID -> {}", applicationId);
+
+       String applicationId = userDTO.getApplicationId();
+       log.info("Application ID -> {}", applicationId);
 
         LoginResponse loginResponse;
 
@@ -106,6 +108,10 @@ public class UserService {
             Optional<UserPO> optionalUser = userRepository.findByEmail(userDTO.getEmail());
             if (optionalUser.isPresent()) {
                 UserPO userFound = optionalUser.get();
+
+                userFound.setApplicationId(userDTO.getApplicationId());
+
+                userRepository.save(userFound);
 
                 if (passwordEncoder.matches(userDTO.getPassword(), userFound.getPassword())) {
                     loginResponse = userConverter.userPoToLoginResponse(userFound);

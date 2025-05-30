@@ -29,10 +29,11 @@ import static com.progettomedusa.user_service.util.Constants.*;
 
     public UserDTO createRequestToUserDTO(CreateUserRequest createUserRequest){
         UserDTO userDTO = new UserDTO();
-        userDTO.setName(createUserRequest.getName());
+        userDTO.setUsername(createUserRequest.getUsername());
         userDTO.setPassword(createUserRequest.getPassword());
         userDTO.setEmail(createUserRequest.getEmail());
         userDTO.setRole(createUserRequest.getRole());
+        userDTO.setApplicationId(createUserRequest.getApplicationId());
         log.info("UserConverter - createRequestToUserDTO END with DTO -> {}", userDTO);
         return userDTO;
     }
@@ -43,7 +44,7 @@ import static com.progettomedusa.user_service.util.Constants.*;
         createRequestResponse.setDomain(userApplicationProperties.getName());
         createRequestResponse.setTimestamp(tools.getInstant());
         createRequestResponse.setEmail(userCreated.getEmail());
-        createRequestResponse.setName(userCreated.getName());
+        createRequestResponse.setUsername(userCreated.getUsername());
         log.info("UserConverter - createRequestResponse END with createRequestResponse -> {}", createRequestResponse);
         return createRequestResponse;
     }
@@ -63,10 +64,11 @@ import static com.progettomedusa.user_service.util.Constants.*;
         if(userDTO.getId() != null){
             userPO.setId(Long.valueOf(userDTO.getId()));
         }
-        userPO.setName(userDTO.getName());
+        userPO.setUsername(userDTO.getUsername());
         userPO.setEmail(userDTO.getEmail());
         userPO.setPassword(userDTO.getPassword());
         userPO.setRole(userDTO.getRole());
+        userPO.setApplicationId(userDTO.getApplicationId());
         log.info("UserConverter - createRequestToUserDTO END with PO -> {}", userPO);
         return userPO;
     }
@@ -95,7 +97,7 @@ import static com.progettomedusa.user_service.util.Constants.*;
         UserResponse userResponse = new UserResponse();
         userResponse.setId(String.valueOf(userPO.getId()));
         userResponse.setRole(userPO.getRole());
-        userResponse.setName(userPO.getName());
+        userResponse.setUsername(userPO.getUsername());
         userResponse.setEmail(userPO.getEmail());
 
         getUserResponse.setUser(userResponse);
@@ -120,10 +122,11 @@ import static com.progettomedusa.user_service.util.Constants.*;
     public UserDTO updateRequestToDto(UpdateUserRequest updateUserRequest){
         UserDTO userDTO = new UserDTO();
         userDTO.setId(updateUserRequest.getId());
-        userDTO.setName(updateUserRequest.getName());
+        userDTO.setUsername(updateUserRequest.getUsername());
         userDTO.setPassword(updateUserRequest.getPassword());
         userDTO.setEmail(updateUserRequest.getEmail());
         userDTO.setRole(updateUserRequest.getRole());
+        userDTO.setApplicationId(updateUserRequest.getApplicationId());
         log.info("UserConverter - updateRequestToDto END with DTO -> {}", userDTO);
         return userDTO;
     }
@@ -131,7 +134,7 @@ import static com.progettomedusa.user_service.util.Constants.*;
     public UpdateUserResponse userToUpdateResponse(UserPO userPO){
         UserResponse userResponse = new UserResponse();
         userResponse.setEmail(userPO.getEmail());
-        userResponse.setName(userPO.getName());
+        userResponse.setUsername(userPO.getUsername());
 
         UpdateUserResponse updateUserResponse = new UpdateUserResponse();
         updateUserResponse.setMessage("Update done");
@@ -160,6 +163,7 @@ import static com.progettomedusa.user_service.util.Constants.*;
         }
         userDTO.setPassword(loginRequest.getPassword());
         log.info("UserConverter - loginRequestToUserDTO END with DTO -> {}", userDTO);
+        userDTO.setApplicationId(loginRequest.getApplicationId());
         return userDTO;
     }
 

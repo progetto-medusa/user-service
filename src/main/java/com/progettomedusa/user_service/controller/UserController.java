@@ -70,7 +70,7 @@ public class UserController {
     }
 
     @PutMapping("/user")
-    public ResponseEntity<UpdateUserResponse> updateUser(@RequestBody UpdateUserRequest updateUserRequest) {
+    public ResponseEntity<UpdateUserResponse> updateUser(@Valid @RequestBody UpdateUserRequest updateUserRequest) {
         log.info("Controller - updateUser START with id -> {}", updateUserRequest);
         UserDTO userDTO = userConverter.updateRequestToDto(updateUserRequest);
         UpdateUserResponse updateUserResponse = userService.updateUser(userDTO);

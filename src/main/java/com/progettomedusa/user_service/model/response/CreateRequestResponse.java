@@ -13,6 +13,6 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CreateRequestResponse extends RestResponse {
     private String email;
-    private String name;
+    private String username;
 }
 

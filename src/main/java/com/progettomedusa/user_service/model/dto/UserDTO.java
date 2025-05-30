@@ -8,7 +8,7 @@ import lombok.*;
 @ToString(exclude="password")
 public class UserDTO {
     private String id;
-    private String name;
+    private String username;
     private String email;
     private String password;
     private String role;

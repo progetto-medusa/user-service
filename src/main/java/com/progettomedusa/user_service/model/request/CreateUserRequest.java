@@ -11,7 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 public class CreateUserRequest {
     @NotBlank
-    private String name;
+    private String username;
     @Email
     @NotBlank
     private String email;
@@ -20,4 +20,7 @@ public class CreateUserRequest {
     private String password;
     @NotBlank
     private String role;
+    @NotBlank
+    @JsonProperty("application_id")
+    private String applicationId;
 }

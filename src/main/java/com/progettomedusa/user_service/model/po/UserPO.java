@@ -1,5 +1,7 @@
 package com.progettomedusa.user_service.model.po;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +20,7 @@ public class UserPO {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    private String username;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -28,5 +30,9 @@ public class UserPO {
 
     @Column(nullable = false)
     private String role;
+
+    @JsonProperty("application_id")
+    @Column(nullable = false)
+    private String applicationId;
 }
 
