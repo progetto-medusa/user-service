@@ -14,20 +14,16 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateUserRequest {
-    @NotNull
     @NotBlank
     private String id;
-    @NotNull
     @NotBlank
     private String name;
     @Email
-    @NotNull
     @NotBlank
     private String email;
     @Size(min = 8)
-    @NotNull
+    @NotBlank
     private String password;
-    @NotNull
     @NotBlank
     private String role;
 }

@@ -73,6 +73,10 @@ public class UserService {
 
     public UpdateUserResponse updateUser(UserDTO userDTO) {
         log.info("Service - updateUser START with dto -> {}", userDTO);
+        log.debug("Service - codifica della password START");
+        String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
+        userDTO.setPassword(encodedPassword);
+        log.debug("Service - codifica della password END");
 
         UserPO userToUpdate = userConverter.dtoToPo(userDTO);
         UserPO currentUser = userRepository.save(userToUpdate);
@@ -92,6 +96,9 @@ public class UserService {
 
     public LoginResponse loginUser(UserDTO userDTO) {
         log.info("Service - loginUser START with DTO -> {}", userDTO);
+
+        String applicationId = userDTO.getApplicationId();
+        log.info("Application ID -> {}", applicationId);
 
         LoginResponse loginResponse;
 

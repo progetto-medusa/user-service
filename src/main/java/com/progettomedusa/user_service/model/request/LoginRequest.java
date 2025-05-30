@@ -14,6 +14,8 @@ public class LoginRequest {
     @NotBlank
     private String email;
     @Size(min = 8)
-    @NotNull
+    @NotBlank
     private String password;
+    @NotBlank
+    private String applicationId;
 }

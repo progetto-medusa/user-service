@@ -10,17 +10,14 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateUserRequest {
-    @NotNull
     @NotBlank
     private String name;
     @Email
-    @NotNull
     @NotBlank
     private String email;
     @Size(min = 8)
-    @NotNull
+    @NotBlank
     private String password;
-    @NotNull
     @NotBlank
     private String role;
 }
