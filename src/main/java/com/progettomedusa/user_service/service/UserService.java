@@ -111,7 +111,7 @@ public class UserService {
 
                 userFound.setApplicationId(userDTO.getApplicationId());
 
-                userRepository.save(userFound);
+               // userRepository.save(userFound);
 
                 if (passwordEncoder.matches(userDTO.getPassword(), userFound.getPassword())) {
                     loginResponse = userConverter.userPoToLoginResponse(userFound);

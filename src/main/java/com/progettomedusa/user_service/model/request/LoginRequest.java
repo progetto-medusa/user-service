@@ -20,4 +20,4 @@ public class LoginRequest {
     @NotBlank
     @JsonProperty("application_id")
     private String applicationId;
-}
+    }
