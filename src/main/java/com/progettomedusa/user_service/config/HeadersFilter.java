@@ -21,6 +21,11 @@ public class HeadersFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            return;
+        }
+
         String appKey = request.getHeader(HEADER_APP_KEY_NAME);
 
         if (appKey == null || !securityProperties.getLicensedApps().contains(appKey)) {

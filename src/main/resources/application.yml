@@ -22,5 +22,5 @@ logging:
 security:
   licensed-apps:
     - local-postman
-    - app2
+    - example-react-app
     - app3
