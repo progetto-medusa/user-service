@@ -112,7 +112,7 @@ public class UserController {
         log.info("Controller - resetPassword END with response -> {}", resetPasswordRequest);
 
         if (resetPasswordResponse.getMessage() == null) {
-            return new ResponseEntity<>(resetPasswordResponse, HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(resetPasswordResponse, HttpStatus.NOT_FOUND);
         }

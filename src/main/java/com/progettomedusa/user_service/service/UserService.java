@@ -146,7 +146,7 @@ public class UserService {
                 userFound.setApplicationId(userDTO.getApplicationId());
 
             }else{
-                resetPasswordResponse.setMessage("User not found");
+                resetPasswordResponse = userConverter.resetPasswordResponse("User not found");
             }
 
         } catch (Exception e) {

@@ -219,13 +219,14 @@ public class UserConverter {
 
 
     public ResetPasswordResponse resetPasswordResponse(String message) {
-        ResetPasswordResponse resetPasswordResponse = resetPasswordResponse(message);
+        ResetPasswordResponse resetPasswordResponse = new ResetPasswordResponse();
+        resetPasswordResponse.setMessage(message);
         resetPasswordResponse.setDomain(userApplicationProperties.getName());
         resetPasswordResponse.setTimestamp(tools.getInstant());
         if (message.equals("USER_NOT_FOUND")) {
             resetPasswordResponse.setDetailed(USER_NOT_FOUND_MESSAGE);
     }
-        return resetPasswordResponse(message);
+        return resetPasswordResponse;
     }
 
 }
