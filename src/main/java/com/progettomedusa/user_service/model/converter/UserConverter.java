@@ -6,6 +6,7 @@ import com.progettomedusa.user_service.model.exception.ErrorMsg;
 import com.progettomedusa.user_service.model.po.UserPO;
 import com.progettomedusa.user_service.model.request.CreateUserRequest;
 import com.progettomedusa.user_service.model.request.LoginRequest;
+import com.progettomedusa.user_service.model.request.ResetPasswordRequest;
 import com.progettomedusa.user_service.model.request.UpdateUserRequest;
 import com.progettomedusa.user_service.model.response.*;
 import com.progettomedusa.user_service.model.response.Error;
@@ -22,12 +23,12 @@ import static com.progettomedusa.user_service.util.Constants.*;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-    public class UserConverter {
+public class UserConverter {
 
     private final Tools tools;
     private final AppProperties userApplicationProperties;
 
-    public UserDTO createRequestToUserDTO(CreateUserRequest createUserRequest){
+    public UserDTO createRequestToUserDTO(CreateUserRequest createUserRequest) {
         UserDTO userDTO = new UserDTO();
         userDTO.setUsername(createUserRequest.getUsername());
         userDTO.setPassword(createUserRequest.getPassword());
@@ -38,7 +39,7 @@ import static com.progettomedusa.user_service.util.Constants.*;
         return userDTO;
     }
 
-    public CreateRequestResponse createRequestResponse(UserPO userCreated){
+    public CreateRequestResponse createRequestResponse(UserPO userCreated) {
         CreateRequestResponse createRequestResponse = new CreateRequestResponse();
         createRequestResponse.setMessage("Creation done");
         createRequestResponse.setDomain(userApplicationProperties.getName());
@@ -49,7 +50,7 @@ import static com.progettomedusa.user_service.util.Constants.*;
         return createRequestResponse;
     }
 
-    public CreateRequestResponse createRequestResponse(Exception e){
+    public CreateRequestResponse createRequestResponse(Exception e) {
         CreateRequestResponse createRequestResponse = new CreateRequestResponse();
         createRequestResponse.setMessage(e.getMessage());
         createRequestResponse.setDomain(userApplicationProperties.getName());
@@ -61,7 +62,7 @@ import static com.progettomedusa.user_service.util.Constants.*;
 
     public UserPO dtoToPo(UserDTO userDTO) {
         UserPO userPO = new UserPO();
-        if(userDTO.getId() != null){
+        if (userDTO.getId() != null) {
             userPO.setId(Long.valueOf(userDTO.getId()));
         }
         userPO.setUsername(userDTO.getUsername());
@@ -73,7 +74,7 @@ import static com.progettomedusa.user_service.util.Constants.*;
         return userPO;
     }
 
-    public GetUsersResponse listOfUsersGetUsersResponse(List<UserPO> userList){
+    public GetUsersResponse listOfUsersGetUsersResponse(List<UserPO> userList) {
         GetUsersResponse getUsersResponse = new GetUsersResponse();
 
         List<GetUserResponse> getUserResponseList = new ArrayList<>();
@@ -91,7 +92,7 @@ import static com.progettomedusa.user_service.util.Constants.*;
         return getUsersResponse;
     }
 
-    public GetUserResponse userPoToGetUserResponse(UserPO userPO, boolean internal){
+    public GetUserResponse userPoToGetUserResponse(UserPO userPO, boolean internal) {
         GetUserResponse getUserResponse = new GetUserResponse();
 
         UserResponse userResponse = new UserResponse();
@@ -101,7 +102,7 @@ import static com.progettomedusa.user_service.util.Constants.*;
         userResponse.setEmail(userPO.getEmail());
 
         getUserResponse.setUser(userResponse);
-        if(!internal) {
+        if (!internal) {
             getUserResponse.setDomain(userApplicationProperties.getName());
             getUserResponse.setTimestamp(tools.getInstant());
         }
@@ -109,7 +110,7 @@ import static com.progettomedusa.user_service.util.Constants.*;
         return getUserResponse;
     }
 
-    public GetUserResponse getUserResponse(){
+    public GetUserResponse getUserResponse() {
         GetUserResponse getUserResponse = new GetUserResponse();
         getUserResponse.setUser(new UserResponse());
         getUserResponse.setMessage(USER_NOT_FOUND_MESSAGE);
@@ -119,7 +120,7 @@ import static com.progettomedusa.user_service.util.Constants.*;
         return getUserResponse;
     }
 
-    public UserDTO updateRequestToDto(UpdateUserRequest updateUserRequest){
+    public UserDTO updateRequestToDto(UpdateUserRequest updateUserRequest) {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(updateUserRequest.getId());
         userDTO.setUsername(updateUserRequest.getUsername());
@@ -131,7 +132,7 @@ import static com.progettomedusa.user_service.util.Constants.*;
         return userDTO;
     }
 
-    public UpdateUserResponse userToUpdateResponse(UserPO userPO){
+    public UpdateUserResponse userToUpdateResponse(UserPO userPO) {
         UserResponse userResponse = new UserResponse();
         userResponse.setEmail(userPO.getEmail());
         userResponse.setUsername(userPO.getUsername());
@@ -146,7 +147,7 @@ import static com.progettomedusa.user_service.util.Constants.*;
         return updateUserResponse;
     }
 
-    public DeleteUserResponse deleteUserResponse(){
+    public DeleteUserResponse deleteUserResponse() {
         DeleteUserResponse deleteUserResponse = new DeleteUserResponse();
         deleteUserResponse.setMessage(USER_DELETED_MESSAGE);
         deleteUserResponse.setDomain(userApplicationProperties.getName());
@@ -157,7 +158,8 @@ import static com.progettomedusa.user_service.util.Constants.*;
 
     public UserDTO loginRequestToUserDTO(LoginRequest loginRequest) {
         UserDTO userDTO = new UserDTO();
-        String email = loginRequest.getEmail(); userDTO.setEmail(email);
+        String email = loginRequest.getEmail();
+        userDTO.setEmail(email);
         if (email == null || !tools.isValidEmail(email)) {
             log.warn("UserConverter - Email non valida o assente in LoginRequest: {}", email);
         }
@@ -175,14 +177,14 @@ import static com.progettomedusa.user_service.util.Constants.*;
         return loginResponse;
     }
 
-    public LoginResponse userPoToLoginResponse(String message){
+    public LoginResponse userPoToLoginResponse(String message) {
         LoginResponse loginResponse = new LoginResponse();
         Error error = new Error();
         error.setCode("CODECODECODE");
-        if(message.equals("WRONG_PASSWORD")){
+        if (message.equals("WRONG_PASSWORD")) {
             error.setCode(ErrorMsg.USRSRV14.getCode());
             error.setMessage("Somethings gone wrong, check the documentation");
-        }else if(message.equals("USER_NOT_FOUND")){
+        } else if (message.equals("USER_NOT_FOUND")) {
             error.setCode(ErrorMsg.USRSRV15.getCode());
             error.setMessage("Somethings gone wrong, check the documentation");
         }
@@ -194,7 +196,8 @@ import static com.progettomedusa.user_service.util.Constants.*;
         log.info("UserConverter - userPoToLoginResponse END with userPoToLoginResponse -> {}", loginResponse);
         return loginResponse;
     }
-    public LoginResponse userPoToLoginResponse(Exception exception){
+
+    public LoginResponse userPoToLoginResponse(Exception exception) {
         LoginResponse loginResponse = new LoginResponse();
         Error error = new Error();
         error.setCode("CODECODECODE");
@@ -206,4 +209,23 @@ import static com.progettomedusa.user_service.util.Constants.*;
         loginResponse.setError(error);
         return loginResponse;
     }
+
+    public UserDTO resetPasswordRequestToDto(ResetPasswordRequest resetPasswordRequest) {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setEmail(resetPasswordRequest.getEmail());
+        log.info("UserConverter - updateRequestToDto END with DTO -> {}", userDTO);
+        return userDTO;
+    }
+
+
+    public ResetPasswordResponse resetPasswordResponse(String message) {
+        ResetPasswordResponse resetPasswordResponse = resetPasswordResponse(message);
+        resetPasswordResponse.setDomain(userApplicationProperties.getName());
+        resetPasswordResponse.setTimestamp(tools.getInstant());
+        if (message.equals("USER_NOT_FOUND")) {
+            resetPasswordResponse.setDetailed(USER_NOT_FOUND_MESSAGE);
+    }
+        return resetPasswordResponse(message);
+    }
+
 }

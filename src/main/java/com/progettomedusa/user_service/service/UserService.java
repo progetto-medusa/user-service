@@ -24,7 +24,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public CreateRequestResponse createUser(UserDTO userDTO) {
-        log.info("Service - createUser START with DTO -> {}",userDTO);
+        log.info("Service - createUser START with DTO -> {}", userDTO);
 
 
         CreateRequestResponse createRequestResponse;
@@ -38,11 +38,11 @@ public class UserService {
 
             UserPO userCreated = userRepository.save(userToCreate);
             createRequestResponse = userConverter.createRequestResponse(userCreated);
-        }catch(Exception e){
-            log.error("Service - createUser ERROR with message -> {}",e.getMessage());
+        } catch (Exception e) {
+            log.error("Service - createUser ERROR with message -> {}", e.getMessage());
             createRequestResponse = userConverter.createRequestResponse(e);
         }
-        log.info("Service - createUser END with response -> {}",createRequestResponse);
+        log.info("Service - createUser END with response -> {}", createRequestResponse);
         return createRequestResponse;
     }
 
@@ -52,7 +52,7 @@ public class UserService {
         List<UserPO> userList = userRepository.findAll();
         GetUsersResponse getUsersResponse = userConverter.listOfUsersGetUsersResponse(userList);
 
-        log.info("Service - getUsers END with response -> {}",getUsersResponse);
+        log.info("Service - getUsers END with response -> {}", getUsersResponse);
         return getUsersResponse;
     }
 
@@ -62,13 +62,13 @@ public class UserService {
         Optional<UserPO> userPo = userRepository.findById(id);
 
         GetUserResponse getUserResponse;
-        if(userPo.isPresent()){
+        if (userPo.isPresent()) {
             getUserResponse = userConverter.userPoToGetUserResponse(userPo.get(), false);
-        }else{
+        } else {
             getUserResponse = userConverter.getUserResponse();
         }
 
-        log.info("Service - getAllUsers END with response -> {}",getUserResponse);
+        log.info("Service - getAllUsers END with response -> {}", getUserResponse);
         return getUserResponse;
     }
 
@@ -99,8 +99,8 @@ public class UserService {
         log.info("Service - loginUser START with DTO -> {}", userDTO);
 
 
-       String applicationId = userDTO.getApplicationId();
-       log.info("Application ID -> {}", applicationId);
+        String applicationId = userDTO.getApplicationId();
+        log.info("Application ID -> {}", applicationId);
 
         LoginResponse loginResponse;
 
@@ -110,8 +110,6 @@ public class UserService {
                 UserPO userFound = optionalUser.get();
 
                 userFound.setApplicationId(userDTO.getApplicationId());
-
-               // userRepository.save(userFound);
 
                 if (passwordEncoder.matches(userDTO.getPassword(), userFound.getPassword())) {
                     loginResponse = userConverter.userPoToLoginResponse(userFound);
@@ -128,5 +126,33 @@ public class UserService {
         }
         log.info("Service - loginUser END with response -> {}", loginResponse);
         return loginResponse;
+    }
+
+
+    public ResetPasswordResponse resetPassword(UserDTO userDTO) {
+        log.info("Service - resetPassword START with DTO -> {}", userDTO);
+
+
+        String applicationId = userDTO.getApplicationId();
+        log.info("Application ID -> {}", applicationId);
+
+        ResetPasswordResponse resetPasswordResponse = new ResetPasswordResponse();
+
+        try {
+            Optional<UserPO> optionalUser = userRepository.findByEmail(userDTO.getEmail());
+            if (optionalUser.isPresent()) {
+                UserPO userFound = optionalUser.get();
+
+                userFound.setApplicationId(userDTO.getApplicationId());
+
+            }else{
+                resetPasswordResponse.setMessage("User not found");
+            }
+
+        } catch (Exception e) {
+            log.error("Service - loginUser ERROR with message -> {}", e.getMessage());
+        }
+        log.info("Service - loginUser END with response -> {}", resetPasswordResponse);
+        return resetPasswordResponse;
     }
 }
