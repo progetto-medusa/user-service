@@ -4,12 +4,10 @@ import com.progettomedusa.user_service.config.AppProperties;
 import com.progettomedusa.user_service.model.dto.UserDTO;
 import com.progettomedusa.user_service.model.exception.ErrorMsg;
 import com.progettomedusa.user_service.model.po.UserPO;
-import com.progettomedusa.user_service.model.request.CreateUserRequest;
-import com.progettomedusa.user_service.model.request.LoginRequest;
-import com.progettomedusa.user_service.model.request.ResetPasswordRequest;
-import com.progettomedusa.user_service.model.request.UpdateUserRequest;
+import com.progettomedusa.user_service.model.request.*;
 import com.progettomedusa.user_service.model.response.*;
 import com.progettomedusa.user_service.model.response.Error;
+import com.progettomedusa.user_service.service.ExternalCallingService;
 import com.progettomedusa.user_service.util.Tools;
 import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +47,14 @@ public class UserConverter {
         log.info("UserConverter - createRequestResponse END with createRequestResponse -> {}", createRequestResponse);
         return createRequestResponse;
     }
+
+    public UserRequestForm userDtoToUserRequestForm(UserDTO userDTO){
+        UserRequestForm userRequestForm = new UserRequestForm();
+        userRequestForm.setMail(userDTO.getEmail());
+        userRequestForm.setPassword(userDTO.getPassword());
+        return userRequestForm;
+    }
+
 
     public CreateRequestResponse createRequestResponse(Exception e) {
         CreateRequestResponse createRequestResponse = new CreateRequestResponse();

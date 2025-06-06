@@ -3,6 +3,7 @@ package com.progettomedusa.user_service.service;
 import com.progettomedusa.user_service.model.dto.UserDTO;
 import com.progettomedusa.user_service.model.converter.UserConverter;
 import com.progettomedusa.user_service.model.po.UserPO;
+import com.progettomedusa.user_service.model.request.CreateUserRequest;
 import com.progettomedusa.user_service.model.request.ResetPasswordRequest;
 import com.progettomedusa.user_service.model.response.*;
 import com.progettomedusa.user_service.util.Tools;
@@ -43,6 +44,9 @@ public class UserService {
 
             UserPO userCreated = userRepository.save(userToCreate);
             createRequestResponse = userConverter.createRequestResponse(userCreated);
+
+            createRequestResponse = createConfirmUser(userDTO);
+
         } catch (Exception e) {
             log.error("Service - createUser ERROR with message -> {}", e.getMessage());
             createRequestResponse = userConverter.createRequestResponse(e);
@@ -50,6 +54,13 @@ public class UserService {
         log.info("Service - createUser END with response -> {}", createRequestResponse);
         return createRequestResponse;
     }
+
+    public CreateRequestResponse createConfirmUser(UserDTO userDTO) throws IOException {
+       String  url = String.join("", mailServiceProperties.getUrl(), "/mail-service/new-member-confirm");
+        return externalCallingService.createConfirmUser(url, userDTO);
+    }
+
+
 
     public GetUsersResponse getUsers() {
         log.info("Service - getUsers START");

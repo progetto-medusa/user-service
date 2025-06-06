@@ -2,7 +2,11 @@ package com.progettomedusa.user_service.service;
 
 
 //import com.progettomedusa.auth_service.model.request.AuthRequest;
+import com.progettomedusa.user_service.model.converter.UserConverter;
+import com.progettomedusa.user_service.model.dto.UserDTO;
+import com.progettomedusa.user_service.model.request.CreateUserRequest;
 import com.progettomedusa.user_service.model.request.ResetPasswordRequest;
+import com.progettomedusa.user_service.model.response.CreateRequestResponse;
 import com.progettomedusa.user_service.util.Tools;
 import okhttp3.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,6 +31,7 @@ public class ExternalCallingService {
     private final ObjectMapper objectMapper;
     private final OkHttpClientCustom okHttpClientCustom;
     private final Tools tools;
+    private final UserConverter userConverter;
 
 
     public ResetPasswordResponse retrieveUserData(String url, ResetPasswordRequest resetPasswordRequest, String appKeyHeader) throws IOException {
@@ -51,6 +56,28 @@ public class ExternalCallingService {
             resetPasswordResponse.setTimestamp(tools.getInstant());
         }
         return resetPasswordResponse;
+    }
+
+    public CreateRequestResponse createConfirmUser(String url, UserDTO userDTO) throws IOException {
+        String json = objectMapper.writeValueAsString(userConverter.userDtoToUserRequestForm(userDTO));
+        RequestBody requestBody = RequestBody.create(json, MediaType.get("application/json; charset=utf-8"));
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("X-APP-KEY", userDTO.getApplicationId())
+                .post(requestBody)
+                .build();
+        Response response = okHttpClientCustom.okHttpClient().newCall(request).execute();
+        CreateRequestResponse createRequestResponse = new CreateRequestResponse();
+        if (response.isSuccessful()) {
+            createRequestResponse.setMessage("email inviata con successo");
+            createRequestResponse.setDomain("user-service");
+            createRequestResponse.setTimestamp(tools.getInstant());
+        }else{
+            createRequestResponse.setMessage("ERRORE: email non recapitata");
+            createRequestResponse.setDomain("user-service");
+            createRequestResponse.setTimestamp(tools.getInstant());
+        }
+        return createRequestResponse;
     }
 
 
