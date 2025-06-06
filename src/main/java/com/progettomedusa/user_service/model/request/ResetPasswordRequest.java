@@ -16,4 +16,6 @@ public class ResetPasswordRequest {
     private String mail;
     @JsonProperty("password")
     private String password;
+    @JsonProperty("application_id")
+    private String applicationId;
 }
