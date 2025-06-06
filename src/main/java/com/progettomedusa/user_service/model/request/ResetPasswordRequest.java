@@ -13,5 +13,7 @@ import lombok.*;
 public class ResetPasswordRequest {
     @Email
     @NotBlank
-    private String email;
+    private String mail;
+    @JsonProperty("password")
+    private String password;
 }

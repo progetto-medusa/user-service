@@ -105,14 +105,14 @@ public class UserController {
     }
 
     @PostMapping("/progetto-medusa/reset-password")
-    public ResponseEntity<ResetPasswordResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
+    public ResponseEntity<ResetPasswordResponse> resetPassword(@RequestHeader("X-APP-KEY") String appKeyHeader,@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
         log.info("Controller - resetPassword START with request -> {}", resetPasswordRequest);
         UserDTO userDTO = userConverter.resetPasswordRequestToDto(resetPasswordRequest);
-        ResetPasswordResponse resetPasswordResponse = userService.resetPassword(userDTO);
+        ResetPasswordResponse resetPasswordResponse = userService.resetPassword(userDTO, appKeyHeader);
         log.info("Controller - resetPassword END with response -> {}", resetPasswordRequest);
 
-        if (resetPasswordResponse.getMessage() == null) {
-            return new ResponseEntity<>(HttpStatus.OK);
+        if (resetPasswordResponse.getMessage() != "User not found") {
+            return new ResponseEntity<>(resetPasswordResponse, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(resetPasswordResponse, HttpStatus.NOT_FOUND);
         }

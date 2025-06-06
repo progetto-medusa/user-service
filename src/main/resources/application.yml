@@ -24,3 +24,6 @@ security:
     - local-postman
     - example-react-app
     - app3
+
+mail-service:
+  url: http://localhost:8082

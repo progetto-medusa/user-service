@@ -3,15 +3,17 @@ package com.progettomedusa.user_service.service;
 import com.progettomedusa.user_service.model.dto.UserDTO;
 import com.progettomedusa.user_service.model.converter.UserConverter;
 import com.progettomedusa.user_service.model.po.UserPO;
+import com.progettomedusa.user_service.model.request.ResetPasswordRequest;
 import com.progettomedusa.user_service.model.response.*;
-import org.springframework.beans.factory.annotation.Value;
+import com.progettomedusa.user_service.util.Tools;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.progettomedusa.user_service.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import com.progettomedusa.user_service.config.MailServiceProperties;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +24,9 @@ public class UserService {
     private final UserConverter userConverter;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ExternalCallingService externalCallingService;
+    private final MailServiceProperties mailServiceProperties;
+    private final Tools tools;
 
     public CreateRequestResponse createUser(UserDTO userDTO) {
         log.info("Service - createUser START with DTO -> {}", userDTO);
@@ -129,30 +134,47 @@ public class UserService {
     }
 
 
-    public ResetPasswordResponse resetPassword(UserDTO userDTO) {
+    public ResetPasswordResponse resetPassword(UserDTO userDTO, String appKeyHeader) {
         log.info("Service - resetPassword START with DTO -> {}", userDTO);
-
-
-        String applicationId = userDTO.getApplicationId();
-        log.info("Application ID -> {}", applicationId);
-
-        ResetPasswordResponse resetPasswordResponse = new ResetPasswordResponse();
+        ResetPasswordResponse resetPasswordResponse;
 
         try {
             Optional<UserPO> optionalUser = userRepository.findByEmail(userDTO.getEmail());
             if (optionalUser.isPresent()) {
                 UserPO userFound = optionalUser.get();
 
-                userFound.setApplicationId(userDTO.getApplicationId());
+                String newPassword = tools.generateRandomPassword(10);
+                String hashedPassword = passwordEncoder.encode(newPassword);
 
-            }else{
+
+                userFound.setPassword(hashedPassword);
+                userFound.setApplicationId(userDTO.getApplicationId());
+                userRepository.save(userFound);
+
+                ResetPasswordRequest request = new ResetPasswordRequest();
+                request.setMail(userDTO.getEmail());
+                request.setPassword(newPassword);
+
+
+
+                resetPasswordResponse = retrieveUserPassword(request, appKeyHeader );
+            } else {
                 resetPasswordResponse = userConverter.resetPasswordResponse("User not found");
             }
 
         } catch (Exception e) {
-            log.error("Service - loginUser ERROR with message -> {}", e.getMessage());
+            log.error("Service - resetPassword ERROR with message -> {}", e.getMessage());
+            resetPasswordResponse = userConverter.resetPasswordResponse("Unexpected error occurred");
         }
-        log.info("Service - loginUser END with response -> {}", resetPasswordResponse);
+
+        log.info("Service - resetPassword END with response -> {}", resetPasswordResponse);
         return resetPasswordResponse;
     }
+
+    public ResetPasswordResponse retrieveUserPassword(ResetPasswordRequest resetPasswordRequest, String appKeyHeader) throws IOException {
+        String url = String.join("", mailServiceProperties.getUrl(), "/mail-service/reset-password");
+        return externalCallingService.retrieveUserData(url, resetPasswordRequest, appKeyHeader);
+    }
+
+
 }

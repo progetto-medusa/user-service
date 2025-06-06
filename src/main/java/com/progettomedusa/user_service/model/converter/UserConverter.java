@@ -212,7 +212,7 @@ public class UserConverter {
 
     public UserDTO resetPasswordRequestToDto(ResetPasswordRequest resetPasswordRequest) {
         UserDTO userDTO = new UserDTO();
-        userDTO.setEmail(resetPasswordRequest.getEmail());
+        userDTO.setEmail(resetPasswordRequest.getMail());
         log.info("UserConverter - updateRequestToDto END with DTO -> {}", userDTO);
         return userDTO;
     }
