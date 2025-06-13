@@ -109,7 +109,7 @@ public class UserController {
         ResetPasswordResponse resetPasswordResponse = userService.resetPassword(userDTO, appKeyHeader);
         log.info("Controller - resetPassword END with response -> {}", resetPasswordRequest);
 
-        if (resetPasswordResponse.getMessage() != "User not found") {
+        if (!resetPasswordResponse.getMessage().equals("User not found")) {
             return new ResponseEntity<>(resetPasswordResponse, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(resetPasswordResponse, HttpStatus.NOT_FOUND);
@@ -119,9 +119,17 @@ public class UserController {
     @PutMapping("/progetto-medusa/confirm-user")
     public ResponseEntity<UserRequestFormResponse> confirmUser(@Valid @RequestBody ConfirmUserRequest confirmUserRequest){
         log.info("Controller - confirmUser START with request -> {}", confirmUserRequest);
-        UserDTO userDTO = userConverter.confirmUserRequestToDto(confirmUserRequest)
 
+        UserDTO userDTO = userConverter.confirmUserRequestToDto(confirmUserRequest);
+        UserRequestFormResponse userRequestFormResponse = userService.confirmUser(userDTO);
 
+        log.info("Controller - confirmUser END with response -> {}", userRequestFormResponse);
+
+        if(userRequestFormResponse == null){
+            return new ResponseEntity<>(userRequestFormResponse, HttpStatus.UNAUTHORIZED);
+        }else {
+            return new ResponseEntity<>(userRequestFormResponse, HttpStatus.OK);
+        }
     }
 
 }

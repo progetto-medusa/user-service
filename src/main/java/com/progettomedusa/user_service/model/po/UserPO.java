@@ -35,18 +35,14 @@ public class UserPO {
     @Column(nullable = false)
     private String role;
 
-    @JsonProperty("application_id")
-    @Column(nullable = false)
+    @Column(nullable = false, name = "application_id")
     private String applicationId;
 
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @Column(nullable = false)
     private String updateDate;
 
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @Column(nullable = false)
     private String insertDate;
-
 
     @Column(nullable = false)
     private boolean isValid;

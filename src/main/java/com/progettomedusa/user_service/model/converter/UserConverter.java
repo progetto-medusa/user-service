@@ -12,6 +12,8 @@ import com.progettomedusa.user_service.util.Tools;
 import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Map;
 import java.util.UUID;
 
 import java.util.ArrayList;
@@ -63,7 +65,6 @@ public class UserConverter {
         return userRequestForm;
     }
 
-
     public CreateRequestResponse createRequestResponse(Exception e) {
         CreateRequestResponse createRequestResponse = new CreateRequestResponse();
         createRequestResponse.setMessage(e.getMessage());
@@ -86,7 +87,9 @@ public class UserConverter {
         userPO.setApplicationId(userDTO.getApplicationId());
         userPO.setUpdateDate(userDTO.getUpdateDate());
         userPO.setInsertDate(userDTO.getInsertDate());
-        userPO.setValid(userDTO.isValid());
+        userPO.setValid(false);
+        userPO.setUpdateDate(tools.getInstant());
+        userPO.setInsertDate(tools.getInstant());
         log.info("UserConverter - createRequestToUserDTO END with PO -> {}", userPO);
         return userPO;
     }
@@ -202,13 +205,15 @@ public class UserConverter {
     public LoginResponse userPoToLoginResponse(String message) {
         LoginResponse loginResponse = new LoginResponse();
         Error error = new Error();
-        error.setCode("CODECODECODE");
         if (message.equals("WRONG_PASSWORD")) {
             error.setCode(ErrorMsg.USRSRV14.getCode());
             error.setMessage("Somethings gone wrong, check the documentation");
         } else if (message.equals("USER_NOT_FOUND")) {
             error.setCode(ErrorMsg.USRSRV15.getCode());
             error.setMessage("Somethings gone wrong, check the documentation");
+        }else if(message.equals("USER_NOT_ENABLE")){
+            error.setCode(ErrorMsg.USRSRV16.getCode());
+            error.setMessage("Somethings gone wrong, user not enable");
         }
         error.setDomain("MicroServiceFunctional");
         error.setDetailed("Check on the docs with code, domain and status");
@@ -240,7 +245,6 @@ public class UserConverter {
         return userDTO;
     }
 
-
     public ResetPasswordResponse resetPasswordResponse(String message) {
         ResetPasswordResponse resetPasswordResponse = new ResetPasswordResponse();
         resetPasswordResponse.setMessage(message);
@@ -252,19 +256,10 @@ public class UserConverter {
         return resetPasswordResponse;
     }
 
-    public UserDTO confirmUserRequestToDto(UserRequestForm userRequestForm, ConfirmUserRequest confirmUserRequest){
+    public UserDTO confirmUserRequestToDto(ConfirmUserRequest confirmUserRequest){
         UserDTO userDTO = new UserDTO();
-        String email = confirmUserRequest.getEmail();
-        userDTO.setEmail(email);
-        if (email == null || !tools.isValidEmail(email)) {
-            log.warn("UserConverter - Email non valida o assente in confirmUserRequestToDto: {}", email);
-        }
-        String temporaneyToken = userRequestForm.getConfirmationToken();
-        String confirmationToken = confirmUserRequest.getConfirmationToken();
-        userDTO.setConfirmationToken(confirmationToken);
-        if(confirmationToken == null || confirmationToken != temporaneyToken){
-            log.warn("UserConverter - token non valido o assente in confirmUserRequestToDto: {}", email);
-        }
+        userDTO.setEmail(confirmUserRequest.getEmail());
+        userDTO.setConfirmationToken(confirmUserRequest.getConfirmationToken());
         return userDTO;
     }
 

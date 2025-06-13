@@ -1,7 +1,5 @@
 package com.progettomedusa.user_service.config;
 
-
-
 import okhttp3.ConnectionSpec;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

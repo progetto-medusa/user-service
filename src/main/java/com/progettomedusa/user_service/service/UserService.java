@@ -20,23 +20,23 @@ import com.progettomedusa.user_service.config.MailServiceProperties;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserConverter userConverter;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final ExternalCallingService externalCallingService;
-    private final MailServiceProperties mailServiceProperties;
     private final Tools tools;
+
+    //se si riavvia l'applicazione in questo caso questo token viene disabilitato e la creazione utente dovrà ripartire da zero
+    private Map<String, String> appToken = new HashMap<>();
 
     public CreateRequestResponse createUser(UserDTO userDTO) {
         log.info("Service - createUser START with DTO -> {}", userDTO);
-
 
         CreateRequestResponse createRequestResponse;
         try {
@@ -46,29 +46,28 @@ public class UserService {
             log.debug("Service - codifica della password END");
 
             UserPO userToCreate = userConverter.dtoToPo(userDTO);
-            userToCreate.setValid(false);
-            userToCreate.setUpdateDate(tools.getInstant());
-            userToCreate.setInsertDate(tools.getInstant());
 
             UserPO userCreated = userRepository.save(userToCreate);
-            createRequestResponse = userConverter.createRequestResponse(userCreated);
+//            createRequestResponse = userConverter.createRequestResponse(userCreated);
 
-            createRequestResponse = createConfirmUser(userDTO);
+//            createRequestResponse = createConfirmUser(userDTO);
+
+            String uuid = UUID.randomUUID().toString();
+            appToken.put(uuid, userDTO.getEmail());
+            userDTO.setConfirmationToken(uuid);
+
+            createRequestResponse = externalCallingService.createConfirmUser(userDTO);
 
         } catch (Exception e) {
             log.error("Service - createUser ERROR with message -> {}", e.getMessage());
             createRequestResponse = userConverter.createRequestResponse(e);
         }
         log.info("Service - createUser END with response -> {}", createRequestResponse);
+
+
+
         return createRequestResponse;
     }
-
-    public CreateRequestResponse createConfirmUser(UserDTO userDTO) throws IOException {
-       String  url = String.join("", mailServiceProperties.getUrl(), "/mail-service/new-member-confirm");
-        return externalCallingService.createConfirmUser(url, userDTO);
-    }
-
-
 
     public GetUsersResponse getUsers() {
         log.info("Service - getUsers START");
@@ -138,8 +137,11 @@ public class UserService {
                 userFound.setUpdateDate(tools.getInstant());
 
                 if (passwordEncoder.matches(userDTO.getPassword(), userFound.getPassword())) {
-                    loginResponse = userConverter.userPoToLoginResponse(userFound);
-
+                    if(userFound.isValid()){
+                        loginResponse = userConverter.userPoToLoginResponse(userFound);
+                    }else {
+                        loginResponse = userConverter.userPoToLoginResponse("USER_NOT_ENABLE");
+                    }
                 } else {
                     loginResponse = userConverter.userPoToLoginResponse("WRONG_PASSWORD");
                 }
@@ -153,7 +155,6 @@ public class UserService {
         log.info("Service - loginUser END with response -> {}", loginResponse);
         return loginResponse;
     }
-
 
     public ResetPasswordResponse resetPassword(UserDTO userDTO, String appKeyHeader) {
         log.info("Service - resetPassword START with DTO -> {}", userDTO);
@@ -177,9 +178,7 @@ public class UserService {
                 request.setMail(userDTO.getEmail());
                 request.setPassword(newPassword);
 
-
-
-                resetPasswordResponse = retrieveUserPassword(request, appKeyHeader );
+                resetPasswordResponse = externalCallingService.retrieveUserData(request, appKeyHeader);
             } else {
                 resetPasswordResponse = userConverter.resetPasswordResponse("User not found");
             }
@@ -193,10 +192,24 @@ public class UserService {
         return resetPasswordResponse;
     }
 
-    public ResetPasswordResponse retrieveUserPassword(ResetPasswordRequest resetPasswordRequest, String appKeyHeader) throws IOException {
-        String url = String.join("", mailServiceProperties.getUrl(), "/mail-service/reset-password");
-        return externalCallingService.retrieveUserData(url, resetPasswordRequest, appKeyHeader);
+    public UserRequestFormResponse confirmUser(UserDTO userDTO){
+        UserRequestFormResponse userRequestFormResponse = new UserRequestFormResponse();
+
+        String storedKey = appToken.get(userDTO.getConfirmationToken());
+
+        if(storedKey.isEmpty()){
+            return null;
+        }else{
+            Optional<UserPO> userToEnable = userRepository.findByEmail(userDTO.getEmail());
+            if(userToEnable.isPresent()){
+                UserPO userUpdated = userToEnable.get();
+                userUpdated.setValid(true);
+                userRepository.save(userUpdated);
+            }else{
+                return null;
+            }
+        }
+
+        return userRequestFormResponse;
     }
-
-
 }
