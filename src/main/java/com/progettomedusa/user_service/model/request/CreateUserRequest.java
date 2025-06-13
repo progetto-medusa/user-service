@@ -23,4 +23,8 @@ public class CreateUserRequest {
     @NotBlank
     @JsonProperty("application_id")
     private String applicationId;
+    private String updateDate;
+    private String insertDate;
+    @NotNull
+    private boolean isValid;
 }

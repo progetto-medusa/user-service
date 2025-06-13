@@ -30,5 +30,9 @@ public class UpdateUserRequest {
     @NotNull
     @JsonProperty("application_id")
     private String applicationId;
+    @NotBlank
+    private String updateDate;
+    @NotNull
+    private boolean isValid;
 }
 

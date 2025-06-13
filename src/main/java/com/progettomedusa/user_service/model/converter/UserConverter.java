@@ -12,6 +12,7 @@ import com.progettomedusa.user_service.util.Tools;
 import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import java.util.UUID;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,11 +29,16 @@ public class UserConverter {
 
     public UserDTO createRequestToUserDTO(CreateUserRequest createUserRequest) {
         UserDTO userDTO = new UserDTO();
+        String confirmationToken = UUID.randomUUID().toString();
         userDTO.setUsername(createUserRequest.getUsername());
         userDTO.setPassword(createUserRequest.getPassword());
         userDTO.setEmail(createUserRequest.getEmail());
         userDTO.setRole(createUserRequest.getRole());
         userDTO.setApplicationId(createUserRequest.getApplicationId());
+        userDTO.setUpdateDate(tools.getInstant());
+        userDTO.setInsertDate(tools.getInstant());
+        userDTO.setValid(createUserRequest.isValid());
+        userDTO.setConfirmationToken(confirmationToken);
         log.info("UserConverter - createRequestToUserDTO END with DTO -> {}", userDTO);
         return userDTO;
     }
@@ -52,6 +58,8 @@ public class UserConverter {
         UserRequestForm userRequestForm = new UserRequestForm();
         userRequestForm.setMail(userDTO.getEmail());
         userRequestForm.setPassword(userDTO.getPassword());
+        userRequestForm.setConfirmationToken(userDTO.getConfirmationToken());
+        log.info("UserConverter - userDtoToUserRequestForm END with userDtoToUserRequestForm -> {}", userRequestForm);
         return userRequestForm;
     }
 
@@ -76,6 +84,9 @@ public class UserConverter {
         userPO.setPassword(userDTO.getPassword());
         userPO.setRole(userDTO.getRole());
         userPO.setApplicationId(userDTO.getApplicationId());
+        userPO.setUpdateDate(userDTO.getUpdateDate());
+        userPO.setInsertDate(userDTO.getInsertDate());
+        userPO.setValid(userDTO.isValid());
         log.info("UserConverter - createRequestToUserDTO END with PO -> {}", userPO);
         return userPO;
     }
@@ -106,6 +117,9 @@ public class UserConverter {
         userResponse.setRole(userPO.getRole());
         userResponse.setUsername(userPO.getUsername());
         userResponse.setEmail(userPO.getEmail());
+        userResponse.setUpdateDate(userPO.getUpdateDate());
+        userResponse.setInsertDate(userPO.getInsertDate());
+        userResponse.setValid(userPO.isValid());
 
         getUserResponse.setUser(userResponse);
         if (!internal) {
@@ -134,6 +148,8 @@ public class UserConverter {
         userDTO.setEmail(updateUserRequest.getEmail());
         userDTO.setRole(updateUserRequest.getRole());
         userDTO.setApplicationId(updateUserRequest.getApplicationId());
+        userDTO.setUpdateDate(updateUserRequest.getUpdateDate());
+        userDTO.setValid(updateUserRequest.isValid());
         log.info("UserConverter - updateRequestToDto END with DTO -> {}", userDTO);
         return userDTO;
     }
@@ -235,5 +251,22 @@ public class UserConverter {
     }
         return resetPasswordResponse;
     }
+
+    public UserDTO confirmUserRequestToDto(UserRequestForm userRequestForm, ConfirmUserRequest confirmUserRequest){
+        UserDTO userDTO = new UserDTO();
+        String email = confirmUserRequest.getEmail();
+        userDTO.setEmail(email);
+        if (email == null || !tools.isValidEmail(email)) {
+            log.warn("UserConverter - Email non valida o assente in confirmUserRequestToDto: {}", email);
+        }
+        String temporaneyToken = userRequestForm.getConfirmationToken();
+        String confirmationToken = confirmUserRequest.getConfirmationToken();
+        userDTO.setConfirmationToken(confirmationToken);
+        if(confirmationToken == null || confirmationToken != temporaneyToken){
+            log.warn("UserConverter - token non valido o assente in confirmUserRequestToDto: {}", email);
+        }
+        return userDTO;
+    }
+
 
 }

@@ -13,4 +13,8 @@ public class UserDTO {
     private String password;
     private String role;
     private String applicationId;
+    private String updateDate;
+    private String insertDate;
+    private boolean isValid;
+    private String confirmationToken;
 }

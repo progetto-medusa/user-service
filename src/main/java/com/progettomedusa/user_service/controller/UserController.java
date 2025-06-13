@@ -5,10 +5,7 @@ import com.progettomedusa.user_service.model.dto.UserDTO;
 import com.progettomedusa.user_service.model.converter.UserConverter;
 import com.progettomedusa.user_service.model.exception.ErrorMsg;
 import com.progettomedusa.user_service.model.po.UserPO;
-import com.progettomedusa.user_service.model.request.CreateUserRequest;
-import com.progettomedusa.user_service.model.request.ResetPasswordRequest;
-import com.progettomedusa.user_service.model.request.UpdateUserRequest;
-import com.progettomedusa.user_service.model.request.LoginRequest;
+import com.progettomedusa.user_service.model.request.*;
 import com.progettomedusa.user_service.model.response.*;
 import com.progettomedusa.user_service.util.Tools;
 import jakarta.servlet.http.HttpServletRequest;
@@ -118,5 +115,14 @@ public class UserController {
             return new ResponseEntity<>(resetPasswordResponse, HttpStatus.NOT_FOUND);
         }
     }
+
+    @PutMapping("/progetto-medusa/confirm-user")
+    public ResponseEntity<UserRequestFormResponse> confirmUser(@Valid @RequestBody ConfirmUserRequest confirmUserRequest){
+        log.info("Controller - confirmUser START with request -> {}", confirmUserRequest);
+        UserDTO userDTO = userConverter.confirmUserRequestToDto(confirmUserRequest)
+
+
+    }
+
 }
 

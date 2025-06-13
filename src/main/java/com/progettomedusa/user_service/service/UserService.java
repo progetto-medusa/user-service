@@ -7,6 +7,9 @@ import com.progettomedusa.user_service.model.request.CreateUserRequest;
 import com.progettomedusa.user_service.model.request.ResetPasswordRequest;
 import com.progettomedusa.user_service.model.response.*;
 import com.progettomedusa.user_service.util.Tools;
+import org.apache.catalina.User;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.progettomedusa.user_service.repository.UserRepository;
@@ -15,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import com.progettomedusa.user_service.config.MailServiceProperties;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,6 +46,9 @@ public class UserService {
             log.debug("Service - codifica della password END");
 
             UserPO userToCreate = userConverter.dtoToPo(userDTO);
+            userToCreate.setValid(false);
+            userToCreate.setUpdateDate(tools.getInstant());
+            userToCreate.setInsertDate(tools.getInstant());
 
             UserPO userCreated = userRepository.save(userToCreate);
             createRequestResponse = userConverter.createRequestResponse(userCreated);
@@ -96,6 +104,7 @@ public class UserService {
         log.debug("Service - codifica della password END");
 
         UserPO userToUpdate = userConverter.dtoToPo(userDTO);
+        userToUpdate.setUpdateDate(tools.getInstant());
         UserPO currentUser = userRepository.save(userToUpdate);
         UpdateUserResponse updateUserResponse = userConverter.userToUpdateResponse(currentUser);
 
@@ -126,6 +135,7 @@ public class UserService {
                 UserPO userFound = optionalUser.get();
 
                 userFound.setApplicationId(userDTO.getApplicationId());
+                userFound.setUpdateDate(tools.getInstant());
 
                 if (passwordEncoder.matches(userDTO.getPassword(), userFound.getPassword())) {
                     loginResponse = userConverter.userPoToLoginResponse(userFound);
@@ -160,6 +170,7 @@ public class UserService {
 
                 userFound.setPassword(hashedPassword);
                 userFound.setApplicationId(userDTO.getApplicationId());
+                userFound.setUpdateDate(tools.getInstant());
                 userRepository.save(userFound);
 
                 ResetPasswordRequest request = new ResetPasswordRequest();
