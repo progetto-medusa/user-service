@@ -1,15 +1,11 @@
--- progetto_medusa.`user` definition
-
-CREATE TABLE `user` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `username` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `role` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `application_id` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `update_date` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `insert_date` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `is_valid` tinyint(1) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE "user" (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  role VARCHAR(50) NOT NULL,
+  application_id VARCHAR(30),
+  update_date VARCHAR(100) NOT NULL,
+  insert_date VARCHAR(30) NOT NULL,
+  is_valid BOOLEAN NOT NULL
+);
