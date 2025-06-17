@@ -36,7 +36,7 @@ public enum ErrorMsg {
 
     USRSRV15("USRSRV15", "User not found in the system", HttpStatus.NOT_FOUND),
 
-    USRSRV16("USRSRV16", "User not enable in the system", HttpStatus.UNAUTHORIZED),
+    USRSRV16("USRSRV16", "User not enabled in the system", HttpStatus.UNAUTHORIZED),
 
     USRSRV69("USRSRV69", "Bad Request: missing parameters", HttpStatus.BAD_REQUEST),
 
