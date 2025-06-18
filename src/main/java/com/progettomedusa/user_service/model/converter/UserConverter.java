@@ -59,6 +59,7 @@ public class UserConverter {
     public UserRequestForm userDtoToUserRequestForm(UserDTO userDTO){
         UserRequestForm userRequestForm = new UserRequestForm();
         userRequestForm.setMail(userDTO.getEmail());
+        userRequestForm.setUsername(userDTO.getUsername());
         userRequestForm.setPassword(userDTO.getPassword());
         userRequestForm.setConfirmationToken(userDTO.getConfirmationToken());
         log.info("UserConverter - userDtoToUserRequestForm END with userDtoToUserRequestForm -> {}", userRequestForm);

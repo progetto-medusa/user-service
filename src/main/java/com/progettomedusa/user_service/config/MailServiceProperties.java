@@ -13,5 +13,3 @@ import org.springframework.stereotype.Component;
 public class MailServiceProperties {
     private String url;
 }
-
-

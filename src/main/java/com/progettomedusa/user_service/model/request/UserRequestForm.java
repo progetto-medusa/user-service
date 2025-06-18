@@ -14,6 +14,8 @@ public class UserRequestForm {
     @NotBlank
     private String mail;
     @NotBlank
+    private String username;
+    @NotBlank
     private String password;
     @NotBlank
     private String confirmationToken;

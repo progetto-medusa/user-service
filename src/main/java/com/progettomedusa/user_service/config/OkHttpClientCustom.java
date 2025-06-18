@@ -14,4 +14,3 @@ public class OkHttpClientCustom {
         return new okhttp3.OkHttpClient.Builder().connectionSpecs(Arrays.asList(ConnectionSpec.MODERN_TLS,ConnectionSpec.COMPATIBLE_TLS,ConnectionSpec.CLEARTEXT)).build().newBuilder().build();
     }
 }
-
