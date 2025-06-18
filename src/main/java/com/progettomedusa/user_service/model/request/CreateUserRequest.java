@@ -27,4 +27,6 @@ public class CreateUserRequest {
     private String insertDate;
     @NotNull
     private boolean isValid;
+    @NotNull
+    private boolean acceptedTerms;
 }

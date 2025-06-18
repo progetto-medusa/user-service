@@ -7,5 +7,6 @@ CREATE TABLE "user" (
   application_id VARCHAR(30),
   update_date VARCHAR(100) NOT NULL,
   insert_date VARCHAR(30) NOT NULL,
-  is_valid BOOLEAN NOT NULL
+  is_valid BOOLEAN NOT NULL,
+  accepted_terms BOOLEAN NOT NULL
 );

@@ -19,5 +19,6 @@ public class UserResponse {
     private String updateDate;
     private String insertDate;
     private boolean isValid;
+    private boolean acceptedTerms;
 }
 
