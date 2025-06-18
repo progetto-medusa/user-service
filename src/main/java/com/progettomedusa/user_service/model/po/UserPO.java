@@ -46,5 +46,8 @@ public class UserPO {
 
     @Column(nullable = false)
     private boolean isValid;
+
+    @Column(nullable = false)
+    private boolean acceptedTerms;
 }
 

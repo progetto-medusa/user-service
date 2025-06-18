@@ -41,6 +41,7 @@ public class UserConverter {
         userDTO.setInsertDate(tools.getInstant());
         userDTO.setValid(createUserRequest.isValid());
         userDTO.setConfirmationToken(confirmationToken);
+        userDTO.setAcceptedTerms(createUserRequest.isAcceptedTerms());
         log.info("UserConverter - createRequestToUserDTO END with DTO -> {}", userDTO);
         return userDTO;
     }
@@ -88,6 +89,7 @@ public class UserConverter {
         userPO.setUpdateDate(userDTO.getUpdateDate());
         userPO.setInsertDate(userDTO.getInsertDate());
         userPO.setValid(false);
+        userPO.setAcceptedTerms(userDTO.isAcceptedTerms());
         userPO.setUpdateDate(tools.getInstant());
         userPO.setInsertDate(tools.getInstant());
         log.info("UserConverter - createRequestToUserDTO END with PO -> {}", userPO);
@@ -123,6 +125,7 @@ public class UserConverter {
         userResponse.setUpdateDate(userPO.getUpdateDate());
         userResponse.setInsertDate(userPO.getInsertDate());
         userResponse.setValid(userPO.isValid());
+        userResponse.setAcceptedTerms(userPO.isAcceptedTerms());
 
         getUserResponse.setUser(userResponse);
         if (!internal) {
