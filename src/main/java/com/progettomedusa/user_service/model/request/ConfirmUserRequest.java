@@ -1,6 +1,6 @@
 package com.progettomedusa.user_service.model.request;
 
-import jakarta.validation.constraints.Email;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -15,7 +15,10 @@ import lombok.Setter;
 public class ConfirmUserRequest {
     @NotNull
     @NotEmpty
+    @JsonProperty("confirmation_token")
     private String confirmationToken;
-    @Email
-    private String email;
+    @NotEmpty
+    @NotNull
+    @JsonProperty("application_id")
+    private String applicationId;
 }

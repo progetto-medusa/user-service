@@ -34,7 +34,6 @@ public class UserController {
     public ResponseEntity<CreateRequestResponse> createUser(@RequestHeader("X-APP-KEY") String appKeyHeader, @Valid @RequestBody CreateUserRequest createUserRequest) {
         log.info("Controller - createUser START with request -> {}", createUserRequest);
         UserDTO userDTO = userConverter.createRequestToUserDTO(createUserRequest);
-        userDTO.setApplicationId(appKeyHeader);
         CreateRequestResponse createRequestResponse = userService.createUser(userDTO);
         log.info("Controller - createUser END with response -> {}", createRequestResponse);
         return new ResponseEntity<>(createRequestResponse, HttpStatus.ACCEPTED);

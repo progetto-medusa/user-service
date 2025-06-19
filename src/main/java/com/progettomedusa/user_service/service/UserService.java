@@ -53,7 +53,8 @@ public class UserService {
 //            createRequestResponse = createConfirmUser(userDTO);
 
             String uuid = UUID.randomUUID().toString();
-            appToken.put(uuid, userDTO.getEmail());
+            String key = String.join("#",userCreated.getApplicationId(),uuid);
+            appToken.put(key, userDTO.getEmail());
             userDTO.setConfirmationToken(uuid);
 
             createRequestResponse = externalCallingService.createConfirmUser(userDTO);
@@ -195,12 +196,12 @@ public class UserService {
     public UserRequestFormResponse confirmUser(UserDTO userDTO){
         UserRequestFormResponse userRequestFormResponse = new UserRequestFormResponse();
 
-        String storedKey = appToken.get(userDTO.getConfirmationToken());
-
+        String key = String.join("#",userDTO.getApplicationId(),userDTO.getConfirmationToken());
+        String storedKey = appToken.get(key);
         if(storedKey.isEmpty()){
             return null;
         }else{
-            Optional<UserPO> userToEnable = userRepository.findByEmail(userDTO.getEmail());
+            Optional<UserPO> userToEnable = userRepository.findByEmail(storedKey);
             if(userToEnable.isPresent()){
                 UserPO userUpdated = userToEnable.get();
                 userUpdated.setValid(true);

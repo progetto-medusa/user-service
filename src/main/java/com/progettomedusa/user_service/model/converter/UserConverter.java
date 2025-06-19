@@ -262,7 +262,7 @@ public class UserConverter {
 
     public UserDTO confirmUserRequestToDto(ConfirmUserRequest confirmUserRequest){
         UserDTO userDTO = new UserDTO();
-        userDTO.setEmail(confirmUserRequest.getEmail());
+        userDTO.setApplicationId(confirmUserRequest.getApplicationId());
         userDTO.setConfirmationToken(confirmUserRequest.getConfirmationToken());
         return userDTO;
     }
