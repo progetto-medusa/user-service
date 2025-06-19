@@ -86,7 +86,7 @@ public class UserController {
         return new ResponseEntity<>(deleteUserResponse, HttpStatus.ACCEPTED);
     }
 
-    @PostMapping("/progetto-medusa/login")
+    @PostMapping("/progetto-medusa/user/login")
     public ResponseEntity<LoginResponse> loginUser(@RequestBody LoginRequest loginRequest) {
         log.info("Controller - loginUser START with request -> {}", loginRequest);
         UserDTO userDTO = userConverter.loginRequestToUserDTO(loginRequest);
@@ -116,7 +116,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/progetto-medusa/confirm-user")
+    @PutMapping("/progetto-medusa/user/activate")
     public ResponseEntity<UserRequestFormResponse> confirmUser(@Valid @RequestBody ConfirmUserRequest confirmUserRequest){
         log.info("Controller - confirmUser START with request -> {}", confirmUserRequest);
 
