@@ -1,6 +1,6 @@
 spring:
   application:
-   name: user-service
+    name: user-service
   datasource:
     url: jdbc:postgresql://localhost:5432/progetto_medusa
     username: admin
@@ -22,8 +22,7 @@ logging:
 security:
   licensed-apps:
     - local-postman
-    - example-react-app
-    - app3
+    - 9110e2a42e28b6cf56f7bc507753c1d76a60f3bbd209ed1da9eb6071b36d14a9
 
 mail-service:
   url: http://localhost:8082
