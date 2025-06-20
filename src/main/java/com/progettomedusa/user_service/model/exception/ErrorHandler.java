@@ -1,14 +1,13 @@
 package com.progettomedusa.user_service.model.exception;
 
 
-import com.progettomedusa.user_service.controller.UserController;
+import com.progettomedusa.user_service.controller.InternalController;
+import com.progettomedusa.user_service.controller.ProgettoMedusaController;
 import com.progettomedusa.user_service.util.Tools;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.buf.StringUtils;
@@ -36,9 +35,11 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import static com.progettomedusa.user_service.util.Constants.PROGETTO_MEDUSA_DOMAIN_KEY;
+
 @Slf4j
 @Setter
-@RestControllerAdvice(assignableTypes = {UserController.class})
+@RestControllerAdvice(assignableTypes = {InternalController.class, ProgettoMedusaController.class})
 public class ErrorHandler implements RequestBodyAdvice {
 
     private static final ThreadLocal<ErrorHandler> requestInfoThreadLocal = new ThreadLocal<>();
@@ -71,6 +72,13 @@ public class ErrorHandler implements RequestBodyAdvice {
     public final CommonErrorResponse handleAllExceptions(Exception ex, HttpServletRequest request) {
         log.error("Exception: ", ex);
         return buildError(request, ErrorMsg.USRSRV99.getCode(), ErrorMsg.USRSRV99.getMessage(), ex.getMessage(), DomainMsg.USER_SERVICE_TECHNICAL.getName());
+    }
+
+    @ExceptionHandler(LoginException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public final CommonErrorResponse handleBadRequestExceptions(LoginException ex, HttpServletRequest request, String code, String message) {
+        log.error("Exception: ", ex);
+        return buildError(request, code, message, ex.getMessage(), DomainMsg.USER_SERVICE_TECHNICAL.getName());
     }
 
     @ExceptionHandler({ RuntimeException.class })
@@ -179,7 +187,7 @@ public class ErrorHandler implements RequestBodyAdvice {
         CommonErrorResponse commonErrorResponse = new CommonErrorResponse();
         commonErrorResponse.setError(error);
         commonErrorResponse.setTimestamp(tools.getInstant());
-        commonErrorResponse.setDomain("user-service");
+        commonErrorResponse.setDomain(PROGETTO_MEDUSA_DOMAIN_KEY);
         return commonErrorResponse;
     }
 

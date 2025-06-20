@@ -1,14 +1,9 @@
 package com.progettomedusa.user_service.controller;
 
-import com.progettomedusa.user_service.config.AppProperties;
 import com.progettomedusa.user_service.model.dto.UserDTO;
 import com.progettomedusa.user_service.model.converter.UserConverter;
-import com.progettomedusa.user_service.model.exception.ErrorMsg;
-import com.progettomedusa.user_service.model.po.UserPO;
 import com.progettomedusa.user_service.model.request.*;
 import com.progettomedusa.user_service.model.response.*;
-import com.progettomedusa.user_service.util.Tools;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,18 +17,16 @@ import static com.progettomedusa.user_service.util.Constants.USER_NOT_FOUND_MESS
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-public class UserController {
+public class InternalController {
 
     private final UserService userService;
     private final UserConverter userConverter;
-    private final Tools tools;
-    private final AppProperties appProperties;
-
 
     @PostMapping("/user")
     public ResponseEntity<CreateRequestResponse> createUser(@RequestHeader("X-APP-KEY") String appKeyHeader, @Valid @RequestBody CreateUserRequest createUserRequest) {
         log.info("Controller - createUser START with request -> {}", createUserRequest);
         UserDTO userDTO = userConverter.createRequestToUserDTO(createUserRequest);
+        userDTO.setApplicationId(appKeyHeader);
         CreateRequestResponse createRequestResponse = userService.createUser(userDTO);
         log.info("Controller - createUser END with response -> {}", createRequestResponse);
         return new ResponseEntity<>(createRequestResponse, HttpStatus.ACCEPTED);
@@ -83,52 +76,6 @@ public class UserController {
         DeleteUserResponse deleteUserResponse = userService.deleteUser(id);
         log.info("Controller - deleteUser END with response -> {}", deleteUserResponse);
         return new ResponseEntity<>(deleteUserResponse, HttpStatus.ACCEPTED);
-    }
-
-    @PostMapping("/progetto-medusa/user/login")
-    public ResponseEntity<LoginResponse> loginUser(@RequestBody LoginRequest loginRequest) {
-        log.info("Controller - loginUser START with request -> {}", loginRequest);
-        UserDTO userDTO = userConverter.loginRequestToUserDTO(loginRequest);
-        LoginResponse response = userService.loginUser(userDTO);
-        if (response.getError() == null) {
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else if (ErrorMsg.USRSRV15.getCode().equals(response.getError().getCode())) {
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        } else if (ErrorMsg.USRSRV14.getCode().equals(response.getError().getCode())) {
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }else {
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @PostMapping("/progetto-medusa/reset-password")
-    public ResponseEntity<ResetPasswordResponse> resetPassword(@RequestHeader("X-APP-KEY") String appKeyHeader,@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
-        log.info("Controller - resetPassword START with request -> {}", resetPasswordRequest);
-        UserDTO userDTO = userConverter.resetPasswordRequestToDto(resetPasswordRequest);
-        ResetPasswordResponse resetPasswordResponse = userService.resetPassword(userDTO, appKeyHeader);
-        log.info("Controller - resetPassword END with response -> {}", resetPasswordRequest);
-
-        if (!resetPasswordResponse.getMessage().equals("User not found")) {
-            return new ResponseEntity<>(resetPasswordResponse, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(resetPasswordResponse, HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @PutMapping("/progetto-medusa/user/activate")
-    public ResponseEntity<UserRequestFormResponse> confirmUser(@Valid @RequestBody ConfirmUserRequest confirmUserRequest){
-        log.info("Controller - confirmUser START with request -> {}", confirmUserRequest);
-
-        UserDTO userDTO = userConverter.confirmUserRequestToDto(confirmUserRequest);
-        UserRequestFormResponse userRequestFormResponse = userService.confirmUser(userDTO);
-
-        log.info("Controller - confirmUser END with response -> {}", userRequestFormResponse);
-
-        if(userRequestFormResponse == null){
-            return new ResponseEntity<>(userRequestFormResponse, HttpStatus.UNAUTHORIZED);
-        }else {
-            return new ResponseEntity<>(userRequestFormResponse, HttpStatus.OK);
-        }
     }
 
 }

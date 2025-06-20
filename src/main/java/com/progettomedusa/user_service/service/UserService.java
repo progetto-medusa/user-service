@@ -2,6 +2,9 @@ package com.progettomedusa.user_service.service;
 
 import com.progettomedusa.user_service.model.dto.UserDTO;
 import com.progettomedusa.user_service.model.converter.UserConverter;
+import com.progettomedusa.user_service.model.exception.DomainMsg;
+import com.progettomedusa.user_service.model.exception.ErrorMsg;
+import com.progettomedusa.user_service.model.exception.LoginException;
 import com.progettomedusa.user_service.model.po.UserPO;
 import com.progettomedusa.user_service.model.request.CreateUserRequest;
 import com.progettomedusa.user_service.model.request.ResetPasswordRequest;
@@ -21,6 +24,8 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+
+import static com.progettomedusa.user_service.util.Constants.*;
 
 @Slf4j
 @Service
@@ -120,42 +125,58 @@ public class UserService {
         return deleteUserResponse;
     }
 
-    public LoginResponse loginUser(UserDTO userDTO) {
+    public LoginResponse loginUser(UserDTO userDTO) throws LoginException {
         log.info("Service - loginUser START with DTO -> {}", userDTO);
-
 
         String applicationId = userDTO.getApplicationId();
         log.info("Application ID -> {}", applicationId);
 
-        LoginResponse loginResponse;
-
         try {
             Optional<UserPO> optionalUser = userRepository.findByEmail(userDTO.getEmail());
-            if (optionalUser.isPresent()) {
-                UserPO userFound = optionalUser.get();
-
-                userFound.setApplicationId(userDTO.getApplicationId());
-                userFound.setUpdateDate(tools.getInstant());
-
-                if (passwordEncoder.matches(userDTO.getPassword(), userFound.getPassword())) {
-                    if(userFound.isValid()){
-                        loginResponse = userConverter.userPoToLoginResponse(userFound);
-                    }else {
-                        loginResponse = userConverter.userPoToLoginResponse("USER_NOT_ENABLE");
-                    }
-                } else {
-                    loginResponse = userConverter.userPoToLoginResponse("WRONG_PASSWORD");
-                }
-            } else {
-                loginResponse = userConverter.userPoToLoginResponse("USER_NOT_FOUND");
+            if (optionalUser.isEmpty()) {
+                throw new LoginException(
+                        ErrorMsg.USRSRV15.getCode(),
+                        ErrorMsg.USRSRV15.getMessage(),
+                        DomainMsg.MICROSERVICE_FUNCTIONAL.getName(),
+                        BASE_ERROR_DETAILS
+                );
             }
+
+            UserPO userFound = optionalUser.get();
+            userFound.setApplicationId(applicationId);
+            userFound.setUpdateDate(tools.getInstant());
+
+            if (!passwordEncoder.matches(userDTO.getPassword(), userFound.getPassword())) {
+                throw new LoginException(
+                        ErrorMsg.USRSRV14.getCode(),
+                        ErrorMsg.USRSRV14.getMessage(),
+                        DomainMsg.MICROSERVICE_FUNCTIONAL.getName(),
+                        BASE_ERROR_DETAILS
+                );
+            }
+
+            if (!userFound.isValid()) {
+                throw new LoginException(
+                        ErrorMsg.USRSRV16.getCode(),
+                        ErrorMsg.USRSRV16.getMessage(),
+                        DomainMsg.MICROSERVICE_FUNCTIONAL.getName(),
+                        BASE_ERROR_DETAILS
+                );
+            }
+
+            LoginResponse loginResponse = userConverter.userPoToLoginResponse(userFound);
+            log.info("Service - loginUser END with response -> {}", loginResponse);
+            return loginResponse;
+
+        } catch (LoginException e) {
+            log.warn("Login failed: {}", e.getMessage());
+            throw e;
         } catch (Exception e) {
-            log.error("Service - loginUser ERROR with message -> {}", e.getMessage());
-            loginResponse = userConverter.userPoToLoginResponse(e);
+            log.error("Unexpected error during loginUser: {}", e.getMessage(), e);
+            return userConverter.userPoToLoginResponse(e); // Consider a fallback strategy here if applicable
         }
-        log.info("Service - loginUser END with response -> {}", loginResponse);
-        return loginResponse;
     }
+
 
     public ResetPasswordResponse resetPassword(UserDTO userDTO, String appKeyHeader) {
         log.info("Service - resetPassword START with DTO -> {}", userDTO);

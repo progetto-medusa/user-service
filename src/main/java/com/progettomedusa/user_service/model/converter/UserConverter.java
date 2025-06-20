@@ -208,22 +208,8 @@ public class UserConverter {
 
     public LoginResponse userPoToLoginResponse(String message) {
         LoginResponse loginResponse = new LoginResponse();
-        Error error = new Error();
-        if (message.equals("WRONG_PASSWORD")) {
-            error.setCode(ErrorMsg.USRSRV14.getCode());
-            error.setMessage("Somethings gone wrong, check the documentation");
-        } else if (message.equals("USER_NOT_FOUND")) {
-            error.setCode(ErrorMsg.USRSRV15.getCode());
-            error.setMessage("Somethings gone wrong, check the documentation");
-        }else if(message.equals("USER_NOT_ENABLE")){
-            error.setCode(ErrorMsg.USRSRV16.getCode());
-            error.setMessage("Somethings gone wrong, user not enable");
-        }
-        error.setDomain("MicroServiceFunctional");
-        error.setDetailed("Check on the docs with code, domain and status");
         loginResponse.setTimestamp(tools.getInstant());
         loginResponse.setDetailed(BASE_ERROR_DETAILS);
-        loginResponse.setError(error);
         log.info("UserConverter - userPoToLoginResponse END with userPoToLoginResponse -> {}", loginResponse);
         return loginResponse;
     }

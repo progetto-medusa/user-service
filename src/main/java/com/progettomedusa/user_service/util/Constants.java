@@ -6,5 +6,6 @@ public class Constants {
     public static final String USER_NOT_FOUND_MESSAGE = "User not found";
     public static final String USER_DELETED_MESSAGE = "User deleted";
     public static final String USER_FOUND_MESSAGE = "User found";
+    public static final String PROGETTO_MEDUSA_DOMAIN_KEY = "pm-user-service";
 }
 
