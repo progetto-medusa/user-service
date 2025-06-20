@@ -14,24 +14,21 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateUserRequest {
-    @NotBlank
-    private String id;
+public class CreatePMUserRequest {
     @NotBlank
     private String username;
     @Email
     @NotBlank
     private String email;
-    @Size(min = 8, max = 30)
+    @Size(min = 8)
     @NotBlank
     private String password;
     @NotBlank
     private String role;
-    @NotNull
+    @NotBlank
     @JsonProperty("application_id")
     private String applicationId;
     @NotNull
-    @JsonProperty("is_valid")
-    private boolean isValid;
+    @JsonProperty("accepted_terms")
+    private boolean acceptedTerms;
 }
-

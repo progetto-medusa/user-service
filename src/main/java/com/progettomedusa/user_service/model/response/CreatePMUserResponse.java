@@ -9,10 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CreateRequestResponse extends RestResponse {
-    private String email;
-    private String username;
+public class CreatePMUserResponse extends RestResponse {
 }
 

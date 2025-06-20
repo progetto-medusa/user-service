@@ -22,16 +22,6 @@ public class InternalController {
     private final UserService userService;
     private final UserConverter userConverter;
 
-    @PostMapping("/user")
-    public ResponseEntity<CreateRequestResponse> createUser(@RequestHeader("X-APP-KEY") String appKeyHeader, @Valid @RequestBody CreateUserRequest createUserRequest) {
-        log.info("Controller - createUser START with request -> {}", createUserRequest);
-        UserDTO userDTO = userConverter.createRequestToUserDTO(createUserRequest);
-        userDTO.setApplicationId(appKeyHeader);
-        CreateRequestResponse createRequestResponse = userService.createUser(userDTO);
-        log.info("Controller - createUser END with response -> {}", createRequestResponse);
-        return new ResponseEntity<>(createRequestResponse, HttpStatus.ACCEPTED);
-    }
-
     @GetMapping("/users")
     public ResponseEntity<GetUsersResponse> getAllUsers() {
         log.info("Controller - getUsers START");
@@ -60,7 +50,7 @@ public class InternalController {
         }
     }
 
-    @PutMapping("/user")
+   /* @PutMapping("/user")
     public ResponseEntity<UpdateUserResponse> updateUser(@Valid @RequestBody UpdateUserRequest updateUserRequest) {
         log.info("Controller - updateUser START with id -> {}", updateUserRequest);
         UserDTO userDTO = userConverter.updateRequestToDto(updateUserRequest);
@@ -69,7 +59,7 @@ public class InternalController {
 
         return new ResponseEntity<>(updateUserResponse, HttpStatus.OK);
     }
-
+*/
     @DeleteMapping("/user/{id}")
     public ResponseEntity<DeleteUserResponse> deleteUser(@PathVariable Long id) {
         log.info("Controller - deleteUser START with id -> {}", id);

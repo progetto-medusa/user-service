@@ -3,11 +3,11 @@ package com.progettomedusa.user_service.service;
 
 //import com.progettomedusa.auth_service.model.request.AuthRequest;
 import com.progettomedusa.user_service.config.MailServiceProperties;
+import com.progettomedusa.user_service.model.converter.PMUserConverter;
 import com.progettomedusa.user_service.model.converter.UserConverter;
 import com.progettomedusa.user_service.model.dto.UserDTO;
-import com.progettomedusa.user_service.model.request.CreateUserRequest;
 import com.progettomedusa.user_service.model.request.ResetPasswordRequest;
-import com.progettomedusa.user_service.model.response.CreateRequestResponse;
+import com.progettomedusa.user_service.model.response.CreatePMUserResponse;
 import com.progettomedusa.user_service.util.Tools;
 import okhttp3.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,8 +20,6 @@ import com.progettomedusa.user_service.model.response.ResetPasswordResponse;
 
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 
 @Slf4j
@@ -33,7 +31,7 @@ public class ExternalCallingService {
     private final ObjectMapper objectMapper;
     private final OkHttpClientCustom okHttpClientCustom;
     private final Tools tools;
-    private final UserConverter userConverter;
+    private final PMUserConverter pmUserConverter;
 
 
     public ResetPasswordResponse retrieveUserData(ResetPasswordRequest resetPasswordRequest, String appKeyHeader) throws IOException {
@@ -61,10 +59,10 @@ public class ExternalCallingService {
         return resetPasswordResponse;
     }
 
-    public CreateRequestResponse createConfirmUser(UserDTO userDTO) throws IOException {
+    public CreatePMUserResponse createConfirmUser(UserDTO userDTO) throws IOException {
         String  url = String.join("", mailServiceProperties.getUrl(), "/mail-service/new-member-confirm");
 
-        String json = objectMapper.writeValueAsString(userConverter.userDtoToUserRequestForm(userDTO));
+        String json = objectMapper.writeValueAsString(pmUserConverter.userDtoToUserRequestForm(userDTO));
         RequestBody requestBody = RequestBody.create(json, MediaType.get("application/json; charset=utf-8"));
         Request request = new Request.Builder()
                 .url(url)
@@ -72,17 +70,17 @@ public class ExternalCallingService {
                 .post(requestBody)
                 .build();
         Response response = okHttpClientCustom.okHttpClient().newCall(request).execute();
-        CreateRequestResponse createRequestResponse = new CreateRequestResponse();
+        CreatePMUserResponse createPMUserResponse = new CreatePMUserResponse();
         if (response.isSuccessful()) {
-            createRequestResponse.setMessage("email inviata con successo");
-            createRequestResponse.setDomain("user-service");
-            createRequestResponse.setTimestamp(tools.getInstant());
+            createPMUserResponse.setMessage("email inviata con successo");
+            createPMUserResponse.setDomain("user-service");
+            createPMUserResponse.setTimestamp(tools.getInstant());
         }else{
-            createRequestResponse.setMessage("ERRORE: email non recapitata");
-            createRequestResponse.setDomain("user-service");
-            createRequestResponse.setTimestamp(tools.getInstant());
+            createPMUserResponse.setMessage("ERRORE: email non recapitata");
+            createPMUserResponse.setDomain("user-service");
+            createPMUserResponse.setTimestamp(tools.getInstant());
         }
-        return createRequestResponse;
+        return createPMUserResponse;
     }
 
 

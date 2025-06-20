@@ -1,16 +1,11 @@
 package com.progettomedusa.user_service.controller;
 
-import com.progettomedusa.user_service.model.converter.UserConverter;
+import com.progettomedusa.user_service.model.converter.PMUserConverter;
 import com.progettomedusa.user_service.model.dto.UserDTO;
-import com.progettomedusa.user_service.model.exception.ErrorMsg;
 import com.progettomedusa.user_service.model.exception.LoginException;
-import com.progettomedusa.user_service.model.request.ConfirmUserRequest;
-import com.progettomedusa.user_service.model.request.LoginRequest;
-import com.progettomedusa.user_service.model.request.ResetPasswordRequest;
-import com.progettomedusa.user_service.model.response.LoginResponse;
-import com.progettomedusa.user_service.model.response.ResetPasswordResponse;
-import com.progettomedusa.user_service.model.response.UserRequestFormResponse;
-import com.progettomedusa.user_service.service.UserService;
+import com.progettomedusa.user_service.model.request.*;
+import com.progettomedusa.user_service.model.response.*;
+import com.progettomedusa.user_service.service.PMUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,15 +19,26 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ProgettoMedusaController {
 
-    private final UserService userService;
-    private final UserConverter userConverter;
+    private final PMUserService pmUserService;
+    private final PMUserConverter pmUserConverter;
 
-    @PostMapping("/login")
+    //altro endpoint creazione dell'utente sulla base dell'interfaccia basata sui termini
+    @PostMapping("/user")
+    public ResponseEntity<CreatePMUserResponse> createUser(@RequestHeader("X-APP-KEY") String appKeyHeader, @Valid @RequestBody CreatePMUserRequest createPMUserRequest) {
+        log.info("Controller - createUser START with request -> {}", createPMUserRequest);
+        UserDTO userDTO = pmUserConverter.createPMUserRequestToUserDTO(createPMUserRequest);
+        CreatePMUserResponse createPMUserResponse = pmUserService.createUser(userDTO);
+        log.info("Controller - createUser END with response -> {}", createPMUserResponse);
+        return new ResponseEntity<>(createPMUserResponse, HttpStatus.ACCEPTED);
+    }
+
+
+    @PostMapping("/user/login")
     public ResponseEntity<LoginResponse> loginUser(@RequestBody LoginRequest loginRequest) throws LoginException {
         log.info("Controller - loginUser START with request -> {}", loginRequest);
 
-        UserDTO userDTO = userConverter.loginRequestToUserDTO(loginRequest);
-        LoginResponse response = userService.loginUser(userDTO);
+        UserDTO userDTO = pmUserConverter.loginRequestToUserDTO(loginRequest);
+        LoginResponse response = pmUserService.loginUser(userDTO);
 
         log.info("Controller - loginUser END with response -> {}", response);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -41,8 +47,8 @@ public class ProgettoMedusaController {
     @PostMapping("/reset-password")
     public ResponseEntity<ResetPasswordResponse> resetPassword(@RequestHeader("X-APP-KEY") String appKeyHeader, @Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
         log.info("Controller - resetPassword START with request -> {}", resetPasswordRequest);
-        UserDTO userDTO = userConverter.resetPasswordRequestToDto(resetPasswordRequest);
-        ResetPasswordResponse resetPasswordResponse = userService.resetPassword(userDTO, appKeyHeader);
+        UserDTO userDTO = pmUserConverter.resetPasswordRequestToDto(resetPasswordRequest);
+        ResetPasswordResponse resetPasswordResponse = pmUserService.resetPassword(userDTO, appKeyHeader);
         log.info("Controller - resetPassword END with response -> {}", resetPasswordRequest);
 
         if (!resetPasswordResponse.getMessage().equals("User not found")) {
@@ -52,12 +58,12 @@ public class ProgettoMedusaController {
         }
     }
 
-    @PutMapping("/confirm-user")
+    @PutMapping("/user/activate")
     public ResponseEntity<UserRequestFormResponse> confirmUser(@Valid @RequestBody ConfirmUserRequest confirmUserRequest){
         log.info("Controller - confirmUser START with request -> {}", confirmUserRequest);
 
-        UserDTO userDTO = userConverter.confirmUserRequestToDto(confirmUserRequest);
-        UserRequestFormResponse userRequestFormResponse = userService.confirmUser(userDTO);
+        UserDTO userDTO = pmUserConverter.confirmUserRequestToDto(confirmUserRequest);
+        UserRequestFormResponse userRequestFormResponse = pmUserService.confirmUser(userDTO);
 
         log.info("Controller - confirmUser END with response -> {}", userRequestFormResponse);
 
