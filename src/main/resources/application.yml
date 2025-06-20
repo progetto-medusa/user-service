@@ -5,7 +5,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/progetto_medusa
     username: admin
     password: admin123
-    jpa:
+  jpa:
       show-sql: true
       hibernate:
         ddl-auto: none
