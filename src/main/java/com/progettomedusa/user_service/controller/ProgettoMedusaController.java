@@ -74,4 +74,22 @@ public class ProgettoMedusaController {
         }
     }
 
+    @PostMapping("/user/recovery")
+    public ResponseEntity<UserRecoveryResponse> recoveryUser(@Valid @RequestBody UserRecoveryRequest userRecoveryRequest){
+        log.info("Controller - recoveryUser START with request -> {}", userRecoveryRequest);
+
+        UserDTO userDTO = pmUserConverter.recoveryUsertoDto(userRecoveryRequest);
+        UserRecoveryResponse userRecoveryResponse = pmUserService.recoveryUser(userDTO);
+
+        log.info("Controller - recoveryUser END with response -> {}", userRecoveryResponse);
+
+        if(userRecoveryResponse == null){
+            return new ResponseEntity<>(userRecoveryResponse, HttpStatus.NOT_FOUND);
+        }else {
+            return new ResponseEntity<>(userRecoveryResponse, HttpStatus.OK);
+        }
+    }
+
+
+
 }

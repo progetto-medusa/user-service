@@ -8,6 +8,7 @@ import com.progettomedusa.user_service.model.exception.ErrorMsg;
 import com.progettomedusa.user_service.model.exception.LoginException;
 import com.progettomedusa.user_service.model.po.UserPO;
 import com.progettomedusa.user_service.model.request.ResetPasswordRequest;
+import com.progettomedusa.user_service.model.request.UserRecoveryRequest;
 import com.progettomedusa.user_service.model.response.*;
 import com.progettomedusa.user_service.repository.UserRepository;
 import com.progettomedusa.user_service.util.Tools;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.UUID;
 
 import java.util.*;
 
@@ -33,6 +35,7 @@ public class PMUserService {
 
     //se si riavvia l'applicazione in questo caso questo token viene disabilitato e la creazione utente dovrà ripartire da zero
     private Map<String, String> appToken = new HashMap<>();
+
 
     public CreatePMUserResponse createUser(UserDTO userDTO) {
         log.info("Service - createUser START with DTO -> {}", userDTO);
@@ -200,5 +203,38 @@ public class PMUserService {
         }
 
         return userRequestFormResponse;
+    }
+
+    public UserRecoveryResponse recoveryUser(UserDTO userDTO) {
+        log.info("Service - recoveryUser START with DTO -> {}", userDTO);
+        UserRecoveryResponse userRecoveryResponse;
+
+        try {
+            if (userDTO == null) {
+                log.warn("Service - recoveryUser received null userDTO");
+                return pmUserConverter.userRecoveryResponse("Invalid input data");
+            }
+
+            String applicationId = userDTO.getApplicationId();
+            String email = userDTO.getEmail();
+
+            if (applicationId == null || applicationId.isEmpty() || email == null || email.isEmpty()) {
+                log.warn("Service - recoveryUser received invalid fields: applicationId={}, email={}", applicationId, email);
+                return pmUserConverter.userRecoveryResponse("Application ID and Email are required");
+            }
+
+            String recoveryUuid = UUID.randomUUID().toString();
+            String key = String.join("#", applicationId, recoveryUuid);
+
+            appToken.put(key, email);
+
+            userRecoveryResponse = pmUserConverter.userRecoveryResponse("Uuid di recupero generato con successo.");
+        } catch (Exception e) {
+            log.error("Service - recoveryUser ERROR with message -> {}", e.getMessage(), e);
+            userRecoveryResponse = pmUserConverter.userRecoveryResponse("Errore imprevisto durante la generazione del Uuid di recupero");
+        }
+
+        log.info("Service - recoveryUser END with response -> {}", userRecoveryResponse);
+        return userRecoveryResponse;
     }
 }

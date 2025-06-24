@@ -4,10 +4,8 @@ import com.progettomedusa.user_service.config.AppProperties;
 import com.progettomedusa.user_service.model.dto.UserDTO;
 import com.progettomedusa.user_service.model.po.UserPO;
 import com.progettomedusa.user_service.model.request.*;
-import com.progettomedusa.user_service.model.response.CreatePMUserResponse;
+import com.progettomedusa.user_service.model.response.*;
 import com.progettomedusa.user_service.model.response.Error;
-import com.progettomedusa.user_service.model.response.LoginResponse;
-import com.progettomedusa.user_service.model.response.ResetPasswordResponse;
 import com.progettomedusa.user_service.util.Tools;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -134,6 +132,23 @@ public class PMUserConverter {
             resetPasswordResponse.setDetailed(USER_NOT_FOUND_MESSAGE);
         }
         return resetPasswordResponse;
+    }
+
+
+    public UserDTO recoveryUsertoDto(UserRecoveryRequest userRecoveryRequest){
+        UserDTO userDTO = new UserDTO();
+        userDTO.setEmail(userRecoveryRequest.getEmail());
+        userDTO.setApplicationId(userRecoveryRequest.getApplicationId());
+        return userDTO;
+    }
+
+    public UserRecoveryResponse userRecoveryResponse(String message){
+        UserRecoveryResponse userRecoveryResponse = new UserRecoveryResponse();
+        userRecoveryResponse.setMessage(message);
+        userRecoveryResponse.setDomain(userApplicationProperties.getName());
+        userRecoveryResponse.setTimestamp(tools.getInstant());
+        log.info("UserConverter - createRequestResponse END with createRequestResponse -> {}", userRecoveryResponse);
+        return userRecoveryResponse;
     }
 
 }
