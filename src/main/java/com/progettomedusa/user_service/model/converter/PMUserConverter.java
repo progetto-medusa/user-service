@@ -135,7 +135,7 @@ public class PMUserConverter {
     }
 
 
-    public UserDTO recoveryUsertoDto(UserRecoveryRequest userRecoveryRequest){
+    public UserDTO recoveryUserToDto(UserRecoveryRequest userRecoveryRequest){
         UserDTO userDTO = new UserDTO();
         userDTO.setEmail(userRecoveryRequest.getEmail());
         userDTO.setApplicationId(userRecoveryRequest.getApplicationId());
@@ -150,5 +150,26 @@ public class PMUserConverter {
         log.info("UserConverter - createRequestResponse END with createRequestResponse -> {}", userRecoveryResponse);
         return userRecoveryResponse;
     }
+
+    public UserDTO newPasswordRequestToDto(NewPasswordRequest newPasswordRequest){
+        UserDTO userDTO = new UserDTO();
+        userDTO.setApplicationId(newPasswordRequest.getApplicationId());
+        userDTO.setPassword(newPasswordRequest.getPassword());
+        userDTO.setToken(newPasswordRequest.getToken());
+        log.info("UserConverter - newPasswordRequestToDto END with DTO -> {}", userDTO);
+        return userDTO;
+    }
+
+    public NewPasswordResponse newPasswordResponse(String message) {
+        NewPasswordResponse newPasswordResponse = new NewPasswordResponse();
+        newPasswordResponse.setMessage(message);
+        newPasswordResponse.setDomain(userApplicationProperties.getName());
+        newPasswordResponse.setTimestamp(tools.getInstant());
+        if (message.equals("USER_NOT_FOUND")) {
+            newPasswordResponse.setDetailed(USER_NOT_FOUND_MESSAGE);
+        }
+        return newPasswordResponse;
+    }
+
 
 }

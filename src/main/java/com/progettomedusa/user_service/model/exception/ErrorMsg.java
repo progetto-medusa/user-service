@@ -38,6 +38,8 @@ public enum ErrorMsg {
 
     USRSRV16("USRSRV16", "User not enabled in the system", HttpStatus.UNAUTHORIZED),
 
+    USRSRV17("USRSRV17", "email non valida", HttpStatus.UNAUTHORIZED),
+
     USRSRV69("USRSRV69", "Bad Request: missing parameters", HttpStatus.BAD_REQUEST),
 
     USRSRV99("USRSRV99", "Generic error", HttpStatus.INTERNAL_SERVER_ERROR);

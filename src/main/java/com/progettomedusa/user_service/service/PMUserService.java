@@ -6,7 +6,9 @@ import com.progettomedusa.user_service.model.dto.UserDTO;
 import com.progettomedusa.user_service.model.exception.DomainMsg;
 import com.progettomedusa.user_service.model.exception.ErrorMsg;
 import com.progettomedusa.user_service.model.exception.LoginException;
+import com.progettomedusa.user_service.model.exception.NewPasswordException;
 import com.progettomedusa.user_service.model.po.UserPO;
+import com.progettomedusa.user_service.model.request.NewPasswordRequest;
 import com.progettomedusa.user_service.model.request.ResetPasswordRequest;
 import com.progettomedusa.user_service.model.request.UserRecoveryRequest;
 import com.progettomedusa.user_service.model.response.*;
@@ -139,7 +141,7 @@ public class PMUserService {
             return loginResponse;
 
         } catch (LoginException e) {
-            log.warn("Login failed: {}", e.getMessage());
+            log.error("Login failed: {}", e.getMessage());
             throw e;
         } catch (Exception e) {
             log.error("Unexpected error during loginUser: {}", e.getMessage(), e);
@@ -147,42 +149,6 @@ public class PMUserService {
         }
     }
 
-
-    public ResetPasswordResponse resetPassword(UserDTO userDTO, String appKeyHeader) {
-        log.info("Service - resetPassword START with DTO -> {}", userDTO);
-        ResetPasswordResponse resetPasswordResponse;
-
-        try {
-            Optional<UserPO> optionalUser = userRepository.findByEmail(userDTO.getEmail());
-            if (optionalUser.isPresent()) {
-                UserPO userFound = optionalUser.get();
-
-                String newPassword = tools.generateRandomPassword(10);
-                String hashedPassword = passwordEncoder.encode(newPassword);
-
-
-                userFound.setPassword(hashedPassword);
-                userFound.setApplicationId(userDTO.getApplicationId());
-                userFound.setUpdateDate(tools.getInstant());
-                userRepository.save(userFound);
-
-                ResetPasswordRequest request = new ResetPasswordRequest();
-                request.setMail(userDTO.getEmail());
-                request.setPassword(newPassword);
-
-                resetPasswordResponse = externalCallingService.retrieveUserData(request, appKeyHeader);
-            } else {
-                resetPasswordResponse = pmUserConverter.resetPasswordResponse("User not found");
-            }
-
-        } catch (Exception e) {
-            log.error("Service - resetPassword ERROR with message -> {}", e.getMessage());
-            resetPasswordResponse = pmUserConverter.resetPasswordResponse("Unexpected error occurred");
-        }
-
-        log.info("Service - resetPassword END with response -> {}", resetPasswordResponse);
-        return resetPasswordResponse;
-    }
 
     public UserRequestFormResponse confirmUser(UserDTO userDTO){
         UserRequestFormResponse userRequestFormResponse = new UserRequestFormResponse();
@@ -236,5 +202,69 @@ public class PMUserService {
 
         log.info("Service - recoveryUser END with response -> {}", userRecoveryResponse);
         return userRecoveryResponse;
+    }
+
+
+    public NewPasswordResponse newPassword(UserDTO userDTO, String appKeyHeader) throws NewPasswordException {
+        log.info("Service - newPassword START with DTO -> {}", userDTO);
+
+        NewPasswordResponse newPasswordResponse;
+
+        try {
+
+            String key = String.join("#", userDTO.getApplicationId(), userDTO.getToken());
+
+            String email = appToken.get(key);
+
+           if (email == null) {
+               throw new NewPasswordException(
+                       ErrorMsg.USRSRV17.getCode(),
+                       ErrorMsg.USRSRV17.getMessage(),
+                       DomainMsg.MICROSERVICE_FUNCTIONAL.getName(),
+                       BASE_ERROR_DETAILS
+               );
+            }
+
+            Optional<UserPO> optionalUser = userRepository.findByEmail(email);
+
+            if (optionalUser.isEmpty()) {
+                throw new NewPasswordException(
+                        ErrorMsg.USRSRV15.getCode(),
+                        ErrorMsg.USRSRV15.getMessage(),
+                        DomainMsg.MICROSERVICE_FUNCTIONAL.getName(),
+                        BASE_ERROR_DETAILS
+                );
+            }
+
+            UserPO user = optionalUser.get();
+
+            String hashedPassword = passwordEncoder.encode(userDTO.getPassword());
+
+            user.setPassword(hashedPassword);
+            user.setUpdateDate(tools.getInstant());
+
+            userRepository.save(user);
+
+            appToken.remove(key);
+
+            NewPasswordRequest newPasswordRequest = new NewPasswordRequest();
+            newPasswordRequest.setApplicationId(userDTO.getApplicationId());
+            newPasswordRequest.setToken(userDTO.getToken());
+            newPasswordRequest.setPassword(userDTO.getPassword());
+
+            newPasswordResponse  = externalCallingService.retrieveUserData(newPasswordRequest, appKeyHeader);
+
+        } catch (Exception e) {
+            log.error("Service - newPassword ERROR", e);
+            throw new NewPasswordException(
+                    ErrorMsg.USRSRV14.getCode(),
+                    ErrorMsg.USRSRV14.getMessage(),
+                    DomainMsg.MICROSERVICE_FUNCTIONAL.getName(),
+                    BASE_ERROR_DETAILS
+            );
+        }
+
+        log.info("Service - newPassword END with response -> {}", newPasswordResponse);
+        return newPasswordResponse;
     }
 }

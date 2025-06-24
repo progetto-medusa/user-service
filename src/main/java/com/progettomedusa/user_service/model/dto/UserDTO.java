@@ -18,4 +18,5 @@ public class UserDTO {
     private boolean isValid;
     private String confirmationToken;
     private boolean acceptedTerms;
+    private String token;
 }

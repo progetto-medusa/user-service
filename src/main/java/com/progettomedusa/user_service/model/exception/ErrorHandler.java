@@ -81,6 +81,13 @@ public class ErrorHandler implements RequestBodyAdvice {
         return buildError(request, code, message, ex.getMessage(), DomainMsg.USER_SERVICE_TECHNICAL.getName());
     }
 
+    @ExceptionHandler(NewPasswordException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public final CommonErrorResponse handleBadRequestExceptions(NewPasswordException ex, HttpServletRequest request, String code, String message) {
+        log.error("Exception: ", ex);
+        return buildError(request, code, message, ex.getMessage(), DomainMsg.USER_SERVICE_TECHNICAL.getName());
+    }
+
     @ExceptionHandler({ RuntimeException.class })
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public final CommonErrorResponse handleRuntimeException(RuntimeException ex, HttpServletRequest request) {

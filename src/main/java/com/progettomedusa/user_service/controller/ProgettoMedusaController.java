@@ -3,6 +3,7 @@ package com.progettomedusa.user_service.controller;
 import com.progettomedusa.user_service.model.converter.PMUserConverter;
 import com.progettomedusa.user_service.model.dto.UserDTO;
 import com.progettomedusa.user_service.model.exception.LoginException;
+import com.progettomedusa.user_service.model.exception.NewPasswordException;
 import com.progettomedusa.user_service.model.request.*;
 import com.progettomedusa.user_service.model.response.*;
 import com.progettomedusa.user_service.service.PMUserService;
@@ -44,19 +45,6 @@ public class ProgettoMedusaController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/reset-password")
-    public ResponseEntity<ResetPasswordResponse> resetPassword(@RequestHeader("X-APP-KEY") String appKeyHeader, @Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
-        log.info("Controller - resetPassword START with request -> {}", resetPasswordRequest);
-        UserDTO userDTO = pmUserConverter.resetPasswordRequestToDto(resetPasswordRequest);
-        ResetPasswordResponse resetPasswordResponse = pmUserService.resetPassword(userDTO, appKeyHeader);
-        log.info("Controller - resetPassword END with response -> {}", resetPasswordRequest);
-
-        if (!resetPasswordResponse.getMessage().equals("User not found")) {
-            return new ResponseEntity<>(resetPasswordResponse, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(resetPasswordResponse, HttpStatus.NOT_FOUND);
-        }
-    }
 
     @PutMapping("/user/activate")
     public ResponseEntity<UserRequestFormResponse> confirmUser(@Valid @RequestBody ConfirmUserRequest confirmUserRequest){
@@ -78,7 +66,7 @@ public class ProgettoMedusaController {
     public ResponseEntity<UserRecoveryResponse> recoveryUser(@Valid @RequestBody UserRecoveryRequest userRecoveryRequest){
         log.info("Controller - recoveryUser START with request -> {}", userRecoveryRequest);
 
-        UserDTO userDTO = pmUserConverter.recoveryUsertoDto(userRecoveryRequest);
+        UserDTO userDTO = pmUserConverter.recoveryUserToDto(userRecoveryRequest);
         UserRecoveryResponse userRecoveryResponse = pmUserService.recoveryUser(userDTO);
 
         log.info("Controller - recoveryUser END with response -> {}", userRecoveryResponse);
@@ -90,6 +78,13 @@ public class ProgettoMedusaController {
         }
     }
 
+    @PostMapping("/user/reset")
+    public ResponseEntity<NewPasswordResponse> newPassword(@RequestHeader("X-APP-KEY") String appKeyHeader, @Valid @RequestBody NewPasswordRequest newPasswordRequest) throws NewPasswordException {
+        log.info("Controller - newPassword START with request -> {}", newPasswordRequest);
 
-
+        UserDTO userDTO = pmUserConverter.newPasswordRequestToDto(newPasswordRequest);
+        NewPasswordResponse newPasswordResponse = pmUserService.newPassword(userDTO, appKeyHeader);
+        log.info("Controller - resetPassword END with response -> {}", newPasswordRequest);
+            return new ResponseEntity<>(newPasswordResponse, HttpStatus.OK);
+    }
 }

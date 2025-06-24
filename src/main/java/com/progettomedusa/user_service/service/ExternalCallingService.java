@@ -1,13 +1,12 @@
 package com.progettomedusa.user_service.service;
 
 
-//import com.progettomedusa.auth_service.model.request.AuthRequest;
 import com.progettomedusa.user_service.config.MailServiceProperties;
 import com.progettomedusa.user_service.model.converter.PMUserConverter;
-import com.progettomedusa.user_service.model.converter.UserConverter;
 import com.progettomedusa.user_service.model.dto.UserDTO;
-import com.progettomedusa.user_service.model.request.ResetPasswordRequest;
+import com.progettomedusa.user_service.model.request.NewPasswordRequest;
 import com.progettomedusa.user_service.model.response.CreatePMUserResponse;
+import com.progettomedusa.user_service.model.response.NewPasswordResponse;
 import com.progettomedusa.user_service.util.Tools;
 import okhttp3.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,32 +32,6 @@ public class ExternalCallingService {
     private final Tools tools;
     private final PMUserConverter pmUserConverter;
 
-
-    public ResetPasswordResponse retrieveUserData(ResetPasswordRequest resetPasswordRequest, String appKeyHeader) throws IOException {
-        String url = String.join("", mailServiceProperties.getUrl(), "/mail-service/reset-password");
-
-        String json = objectMapper.writeValueAsString(resetPasswordRequest);
-        RequestBody requestBody = RequestBody.create(json, MediaType.get("application/json; charset=utf-8"));
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("X-APP-KEY", appKeyHeader)
-                .post(requestBody)
-                .build();
-
-        Response response = okHttpClientCustom.okHttpClient().newCall(request).execute();
-        ResetPasswordResponse resetPasswordResponse = new ResetPasswordResponse();
-        if (response.isSuccessful()) {
-            resetPasswordResponse.setMessage("email inviata con successo");
-            resetPasswordResponse.setDomain("user-service");
-            resetPasswordResponse.setTimestamp(tools.getInstant());
-        }else{
-            resetPasswordResponse.setMessage("ERRORE: email non recapitata");
-            resetPasswordResponse.setDomain("user-service");
-            resetPasswordResponse.setTimestamp(tools.getInstant());
-        }
-        return resetPasswordResponse;
-    }
-
     public CreatePMUserResponse createConfirmUser(UserDTO userDTO) throws IOException {
         String  url = String.join("", mailServiceProperties.getUrl(), "/mail-service/new-member-confirm");
 
@@ -81,6 +54,31 @@ public class ExternalCallingService {
             createPMUserResponse.setTimestamp(tools.getInstant());
         }
         return createPMUserResponse;
+    }
+
+    public NewPasswordResponse retrieveUserData(NewPasswordRequest newPasswordRequest, String appKeyHeader) throws IOException {
+        String url = String.join("", mailServiceProperties.getUrl(), "/mail-service/reset-password");
+
+        String json = objectMapper.writeValueAsString(newPasswordRequest);
+        RequestBody requestBody = RequestBody.create(json, MediaType.get("application/json; charset=utf-8"));
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("X-APP-KEY", appKeyHeader)
+                .post(requestBody)
+                .build();
+
+        Response response = okHttpClientCustom.okHttpClient().newCall(request).execute();
+        NewPasswordResponse newPasswordResponse = new NewPasswordResponse();
+        if (response.isSuccessful()) {
+            newPasswordResponse.setMessage("email inviata con successo");
+            newPasswordResponse.setDomain("user-service");
+            newPasswordResponse.setTimestamp(tools.getInstant());
+        }else{
+            newPasswordResponse.setMessage("ERRORE: email non recapitata");
+            newPasswordResponse.setDomain("user-service");
+            newPasswordResponse.setTimestamp(tools.getInstant());
+        }
+        return newPasswordResponse;
     }
 
 
