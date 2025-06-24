@@ -154,7 +154,7 @@ public class PMUserConverter {
     public UserDTO newPasswordRequestToDto(NewPasswordRequest newPasswordRequest){
         UserDTO userDTO = new UserDTO();
         userDTO.setApplicationId(newPasswordRequest.getApplicationId());
-        userDTO.setPassword(newPasswordRequest.getPassword());
+        userDTO.setPassword(newPasswordRequest.getEmail());
         userDTO.setToken(newPasswordRequest.getToken());
         log.info("UserConverter - newPasswordRequestToDto END with DTO -> {}", userDTO);
         return userDTO;

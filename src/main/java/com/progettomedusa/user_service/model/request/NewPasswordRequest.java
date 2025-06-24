@@ -13,7 +13,7 @@ public class NewPasswordRequest {
     @JsonProperty("application_id")
     private String applicationId;
     @NotBlank
-    private String password;
+    private String email;
     @NotBlank
     private String token;
 }

@@ -84,7 +84,7 @@ public class ProgettoMedusaController {
 
         UserDTO userDTO = pmUserConverter.newPasswordRequestToDto(newPasswordRequest);
         NewPasswordResponse newPasswordResponse = pmUserService.newPassword(userDTO, appKeyHeader);
-        log.info("Controller - resetPassword END with response -> {}", newPasswordRequest);
+        log.info("Controller - resetPassword END with response -> {}", newPasswordResponse);
             return new ResponseEntity<>(newPasswordResponse, HttpStatus.OK);
     }
 }

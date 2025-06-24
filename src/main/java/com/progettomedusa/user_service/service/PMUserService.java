@@ -9,8 +9,7 @@ import com.progettomedusa.user_service.model.exception.LoginException;
 import com.progettomedusa.user_service.model.exception.NewPasswordException;
 import com.progettomedusa.user_service.model.po.UserPO;
 import com.progettomedusa.user_service.model.request.NewPasswordRequest;
-import com.progettomedusa.user_service.model.request.ResetPasswordRequest;
-import com.progettomedusa.user_service.model.request.UserRecoveryRequest;
+import com.progettomedusa.user_service.model.request.ResetPasswordEmailRequest;
 import com.progettomedusa.user_service.model.response.*;
 import com.progettomedusa.user_service.repository.UserRepository;
 import com.progettomedusa.user_service.util.Tools;
@@ -194,6 +193,9 @@ public class PMUserService {
 
             appToken.put(key, email);
 
+            log.info("Test: token = {}", recoveryUuid);
+
+
             userRecoveryResponse = pmUserConverter.userRecoveryResponse("Uuid di recupero generato con successo.");
         } catch (Exception e) {
             log.error("Service - recoveryUser ERROR with message -> {}", e.getMessage(), e);
@@ -247,12 +249,11 @@ public class PMUserService {
 
             appToken.remove(key);
 
-            NewPasswordRequest newPasswordRequest = new NewPasswordRequest();
-            newPasswordRequest.setApplicationId(userDTO.getApplicationId());
-            newPasswordRequest.setToken(userDTO.getToken());
-            newPasswordRequest.setPassword(userDTO.getPassword());
+            ResetPasswordEmailRequest resetPasswordEmailRequest = new ResetPasswordEmailRequest().builder()
+                    .email(email)
+                    .build();
 
-            newPasswordResponse  = externalCallingService.retrieveUserData(newPasswordRequest, appKeyHeader);
+            newPasswordResponse  = externalCallingService.retrieveUserData(resetPasswordEmailRequest, appKeyHeader);
 
         } catch (Exception e) {
             log.error("Service - newPassword ERROR", e);
