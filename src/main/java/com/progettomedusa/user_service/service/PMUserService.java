@@ -170,7 +170,7 @@ public class PMUserService {
         return userRequestFormResponse;
     }
 
-    public UserRecoveryResponse recoveryUser(UserDTO userDTO) {
+    public UserRecoveryResponse recoveryUser(UserDTO userDTO, String appKeyHeader) {
         log.info("Service - recoveryUser START with DTO -> {}", userDTO);
         UserRecoveryResponse userRecoveryResponse;
 
@@ -193,10 +193,13 @@ public class PMUserService {
 
             appToken.put(key, email);
 
-            log.info("Test: token = {}", recoveryUuid);
+            NewPasswordRequest newPasswordRequest = new NewPasswordRequest().builder()
+                    .email(email)
+                    .token(recoveryUuid)
+                    .build();
 
+            userRecoveryResponse  = externalCallingService.recoveryUserToEmail(newPasswordRequest, appKeyHeader);
 
-            userRecoveryResponse = pmUserConverter.userRecoveryResponse("Uuid di recupero generato con successo.");
         } catch (Exception e) {
             log.error("Service - recoveryUser ERROR with message -> {}", e.getMessage(), e);
             userRecoveryResponse = pmUserConverter.userRecoveryResponse("Errore imprevisto durante la generazione del Uuid di recupero");
@@ -268,4 +271,6 @@ public class PMUserService {
         log.info("Service - newPassword END with response -> {}", newPasswordResponse);
         return newPasswordResponse;
     }
+
+
 }

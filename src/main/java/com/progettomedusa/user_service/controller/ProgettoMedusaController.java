@@ -63,11 +63,11 @@ public class ProgettoMedusaController {
     }
 
     @PostMapping("/user/recovery")
-    public ResponseEntity<UserRecoveryResponse> recoveryUser(@Valid @RequestBody UserRecoveryRequest userRecoveryRequest){
+    public ResponseEntity<UserRecoveryResponse> recoveryUser(@RequestHeader("X-APP-KEY") String appKeyHeader, @Valid @RequestBody UserRecoveryRequest userRecoveryRequest){
         log.info("Controller - recoveryUser START with request -> {}", userRecoveryRequest);
 
         UserDTO userDTO = pmUserConverter.recoveryUserToDto(userRecoveryRequest);
-        UserRecoveryResponse userRecoveryResponse = pmUserService.recoveryUser(userDTO);
+        UserRecoveryResponse userRecoveryResponse = pmUserService.recoveryUser(userDTO, appKeyHeader);
 
         log.info("Controller - recoveryUser END with response -> {}", userRecoveryResponse);
 

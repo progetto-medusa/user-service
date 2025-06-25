@@ -85,13 +85,6 @@ public class PMUserConverter {
         return userDTO;
     }
 
-    public UserDTO resetPasswordRequestToDto(ResetPasswordRequest resetPasswordRequest) {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setEmail(resetPasswordRequest.getMail());
-        userDTO.setApplicationId("mail-service");
-        log.info("UserConverter - updateRequestToDto END with DTO -> {}", userDTO);
-        return userDTO;
-    }
 
     public UserDTO confirmUserRequestToDto(ConfirmUserRequest confirmUserRequest){
         UserDTO userDTO = new UserDTO();
@@ -154,7 +147,7 @@ public class PMUserConverter {
     public UserDTO newPasswordRequestToDto(NewPasswordRequest newPasswordRequest){
         UserDTO userDTO = new UserDTO();
         userDTO.setApplicationId(newPasswordRequest.getApplicationId());
-        userDTO.setPassword(newPasswordRequest.getEmail());
+        userDTO.setPassword(newPasswordRequest.getPassword());
         userDTO.setToken(newPasswordRequest.getToken());
         log.info("UserConverter - newPasswordRequestToDto END with DTO -> {}", userDTO);
         return userDTO;

@@ -8,6 +8,7 @@ import com.progettomedusa.user_service.model.request.NewPasswordRequest;
 import com.progettomedusa.user_service.model.request.ResetPasswordEmailRequest;
 import com.progettomedusa.user_service.model.response.CreatePMUserResponse;
 import com.progettomedusa.user_service.model.response.NewPasswordResponse;
+import com.progettomedusa.user_service.model.response.UserRecoveryResponse;
 import com.progettomedusa.user_service.util.Tools;
 import okhttp3.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,7 +59,7 @@ public class ExternalCallingService {
     }
 
     public NewPasswordResponse retrieveUserData(ResetPasswordEmailRequest resetPasswordEmailRequest, String appKeyHeader) throws IOException {
-        String url = String.join("", mailServiceProperties.getUrl(), "/mail-service/reset-password");
+        String url = String.join("", mailServiceProperties.getUrl(), "/mail-service/reset-password-confirmed");
 
         String json = objectMapper.writeValueAsString(resetPasswordEmailRequest);
         RequestBody requestBody = RequestBody.create(json, MediaType.get("application/json; charset=utf-8"));
@@ -80,6 +81,31 @@ public class ExternalCallingService {
             newPasswordResponse.setTimestamp(tools.getInstant());
         }
         return newPasswordResponse;
+    }
+
+    public UserRecoveryResponse recoveryUserToEmail(NewPasswordRequest newPasswordRequest, String appKeyHeader) throws IOException {
+        String url = String.join("", mailServiceProperties.getUrl(), "/mail-service/reset-password");
+
+        String json = objectMapper.writeValueAsString(newPasswordRequest);
+        RequestBody requestBody = RequestBody.create(json, MediaType.get("application/json; charset=utf-8"));
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("X-APP-KEY", appKeyHeader)
+                .post(requestBody)
+                .build();
+
+        Response response = okHttpClientCustom.okHttpClient().newCall(request).execute();
+        UserRecoveryResponse userRecoveryResponse = new UserRecoveryResponse();
+        if (response.isSuccessful()) {
+            userRecoveryResponse.setMessage("email inviata con successo");
+            userRecoveryResponse.setDomain("user-service");
+            userRecoveryResponse.setTimestamp(tools.getInstant());
+        }else{
+            userRecoveryResponse.setMessage("ERRORE: email non recapitata");
+            userRecoveryResponse.setDomain("user-service");
+            userRecoveryResponse.setTimestamp(tools.getInstant());
+        }
+        return userRecoveryResponse;
     }
 
 

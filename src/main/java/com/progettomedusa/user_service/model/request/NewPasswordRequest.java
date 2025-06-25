@@ -9,11 +9,13 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
+@Builder
 public class NewPasswordRequest {
     @JsonProperty("application_id")
     private String applicationId;
     @NotBlank
-    private String email;
+    private String password;
     @NotBlank
     private String token;
 }
