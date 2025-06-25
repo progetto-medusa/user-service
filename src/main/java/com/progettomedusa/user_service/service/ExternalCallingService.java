@@ -4,6 +4,7 @@ package com.progettomedusa.user_service.service;
 import com.progettomedusa.user_service.config.MailServiceProperties;
 import com.progettomedusa.user_service.model.converter.PMUserConverter;
 import com.progettomedusa.user_service.model.dto.UserDTO;
+import com.progettomedusa.user_service.model.request.NewPasswordEmailRequest;
 import com.progettomedusa.user_service.model.request.NewPasswordRequest;
 import com.progettomedusa.user_service.model.request.ResetPasswordEmailRequest;
 import com.progettomedusa.user_service.model.response.CreatePMUserResponse;
@@ -83,10 +84,10 @@ public class ExternalCallingService {
         return newPasswordResponse;
     }
 
-    public UserRecoveryResponse recoveryUserToEmail(NewPasswordRequest newPasswordRequest, String appKeyHeader) throws IOException {
+    public UserRecoveryResponse recoveryUserToEmail(NewPasswordEmailRequest newPasswordEmailRequest, String appKeyHeader) throws IOException {
         String url = String.join("", mailServiceProperties.getUrl(), "/mail-service/reset-password");
 
-        String json = objectMapper.writeValueAsString(newPasswordRequest);
+        String json = objectMapper.writeValueAsString(newPasswordEmailRequest);
         RequestBody requestBody = RequestBody.create(json, MediaType.get("application/json; charset=utf-8"));
         Request request = new Request.Builder()
                 .url(url)

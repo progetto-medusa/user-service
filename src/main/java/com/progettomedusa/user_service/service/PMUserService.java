@@ -8,6 +8,7 @@ import com.progettomedusa.user_service.model.exception.ErrorMsg;
 import com.progettomedusa.user_service.model.exception.LoginException;
 import com.progettomedusa.user_service.model.exception.NewPasswordException;
 import com.progettomedusa.user_service.model.po.UserPO;
+import com.progettomedusa.user_service.model.request.NewPasswordEmailRequest;
 import com.progettomedusa.user_service.model.request.NewPasswordRequest;
 import com.progettomedusa.user_service.model.request.ResetPasswordEmailRequest;
 import com.progettomedusa.user_service.model.response.*;
@@ -193,7 +194,7 @@ public class PMUserService {
 
             appToken.put(key, email);
 
-            NewPasswordRequest newPasswordRequest = new NewPasswordRequest().builder()
+            NewPasswordEmailRequest newPasswordRequest = new NewPasswordEmailRequest().builder()
                     .email(email)
                     .token(recoveryUuid)
                     .build();
