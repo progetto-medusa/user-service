@@ -8,5 +8,6 @@ CREATE TABLE "user" (
   update_date VARCHAR(100) NOT NULL,
   insert_date VARCHAR(30) NOT NULL,
   is_valid BOOLEAN NOT NULL,
-  accepted_terms BOOLEAN NOT NULL
+  accepted_terms BOOLEAN NOT NULL,
+  user_uuid VARCHAR(100) NOT NULL UNIQUE
 );

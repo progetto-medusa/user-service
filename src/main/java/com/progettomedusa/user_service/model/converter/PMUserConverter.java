@@ -40,6 +40,7 @@ public class PMUserConverter {
         userPO.setAcceptedTerms(userDTO.isAcceptedTerms());
         userPO.setUpdateDate(tools.getInstant());
         userPO.setInsertDate(tools.getInstant());
+        userPO.setUserUuid(userDTO.getUserUuid());
         log.info("UserConverter - createRequestToUserDTO END with PO -> {}", userPO);
         return userPO;
     }
@@ -58,6 +59,7 @@ public class PMUserConverter {
         userDTO.setValid(false);
         userDTO.setConfirmationToken(confirmationToken);
         userDTO.setAcceptedTerms(createPMUserRequest.isAcceptedTerms());
+        userDTO.setUserUuid(userDTO.getUserUuid());
         log.info("UserConverter - createRequestToUserDTO END with DTO -> {}", userDTO);
         return userDTO;
     }

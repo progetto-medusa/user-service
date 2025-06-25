@@ -50,6 +50,11 @@ public class PMUserService {
             userDTO.setValid(false);
             log.debug("Service - codifica della password END");
 
+            log.debug("Service - creazione dello userUuid START");
+            String userUuid = UUID.randomUUID().toString();
+            userDTO.setUserUuid(userUuid);
+            log.debug("Service - creazione dello userUuid END");
+
             UserPO userToCreate = pmUserConverter.dtoToPo(userDTO);
 
             UserPO userCreated = userRepository.save(userToCreate);

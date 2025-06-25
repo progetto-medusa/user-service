@@ -19,4 +19,5 @@ public class UserDTO {
     private String confirmationToken;
     private boolean acceptedTerms;
     private String token;
+    private String userUuid;
 }

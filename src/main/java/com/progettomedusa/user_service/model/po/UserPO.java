@@ -49,5 +49,8 @@ public class UserPO {
 
     @Column(nullable = false)
     private boolean acceptedTerms;
+
+    @Column(nullable = false, unique = true, name = "user_uuid")
+    private String userUuid;
 }
 
