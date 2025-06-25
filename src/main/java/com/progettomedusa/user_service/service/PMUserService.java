@@ -34,6 +34,7 @@ public class PMUserService {
     private final PasswordEncoder passwordEncoder;
     private final ExternalCallingService externalCallingService;
     private final Tools tools;
+    private final TokenRedisService tokenRedisService;
 
     //se si riavvia l'applicazione in questo caso questo token viene disabilitato e la creazione utente dovrà ripartire da zero
     private Map<String, String> appToken = new HashMap<>();
@@ -61,7 +62,8 @@ public class PMUserService {
 
             String uuid = UUID.randomUUID().toString();
             String key = String.join("#",userCreated.getApplicationId(),uuid);
-            appToken.put(key, userDTO.getEmail());
+            //appToken.put(key, userDTO.getEmail());
+            tokenRedisService.storeToken(key, userDTO.getEmail());
             userDTO.setConfirmationToken(uuid);
 
             createPMUserResponse = externalCallingService.createConfirmUser(userDTO);
@@ -159,7 +161,7 @@ public class PMUserService {
         UserRequestFormResponse userRequestFormResponse = new UserRequestFormResponse();
 
         String key = String.join("#",userDTO.getApplicationId(),userDTO.getConfirmationToken());
-        String storedKey = appToken.get(key);
+        String storedKey = tokenRedisService.consumeToken(key);
         if(storedKey.isEmpty()){
             return null;
         }else{
@@ -197,7 +199,7 @@ public class PMUserService {
             String recoveryUuid = UUID.randomUUID().toString();
             String key = String.join("#", applicationId, recoveryUuid);
 
-            appToken.put(key, email);
+            tokenRedisService.storeToken(key, email);
 
             NewPasswordEmailRequest newPasswordRequest = new NewPasswordEmailRequest().builder()
                     .email(email)
@@ -225,7 +227,7 @@ public class PMUserService {
 
             String key = String.join("#", userDTO.getApplicationId(), userDTO.getToken());
 
-            String email = appToken.get(key);
+            String email = tokenRedisService.consumeToken(key);
 
            if (email == null) {
                throw new NewPasswordException(
@@ -256,7 +258,7 @@ public class PMUserService {
 
             userRepository.save(user);
 
-            appToken.remove(key);
+            //appToken.remove(key);
 
             ResetPasswordEmailRequest resetPasswordEmailRequest = new ResetPasswordEmailRequest().builder()
                     .email(email)
