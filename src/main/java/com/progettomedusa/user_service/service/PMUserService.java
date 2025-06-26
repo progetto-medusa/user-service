@@ -144,6 +144,10 @@ public class PMUserService {
             }
 
             LoginResponse loginResponse = userConverter.userPoToLoginResponse(userFound);
+
+            String uuid = UUID.randomUUID().toString();
+            loginResponse.setUuid(uuid);
+            loginResponse.setRole(userFound.getRole());
             log.info("Service - loginUser END with response -> {}", loginResponse);
             return loginResponse;
 

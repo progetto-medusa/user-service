@@ -1,5 +1,6 @@
 package com.progettomedusa.user_service.model.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,4 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class LoginResponse extends RestResponse{
     private Error error;
+    @JsonIgnore
+    private String uuid;
+    private String role;
 }
