@@ -117,6 +117,8 @@ public class UserConverter {
 
     public LoginResponse userPoToLoginResponse(UserPO userPO) {
         LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setRole(userPO.getRole());
+        loginResponse.setUuid(userPO.getUserUuid());
         loginResponse.setDomain(userApplicationProperties.getName());
         loginResponse.setTimestamp(tools.getInstant());
         log.info("UserConverter - userPoToLoginResponse END with LoginResponse -> {}", loginResponse);

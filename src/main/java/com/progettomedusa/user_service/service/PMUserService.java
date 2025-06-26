@@ -124,6 +124,7 @@ public class PMUserService {
             UserPO userFound = optionalUser.get();
             userFound.setApplicationId(applicationId);
             userFound.setUpdateDate(tools.getInstant());
+            userRepository.save(userFound);
 
             if (!passwordEncoder.matches(userDTO.getPassword(), userFound.getPassword())) {
                 throw new LoginException(
@@ -145,9 +146,6 @@ public class PMUserService {
 
             LoginResponse loginResponse = userConverter.userPoToLoginResponse(userFound);
 
-            String uuid = UUID.randomUUID().toString();
-            loginResponse.setUuid(uuid);
-            loginResponse.setRole(userFound.getRole());
             log.info("Service - loginUser END with response -> {}", loginResponse);
             return loginResponse;
 

@@ -14,7 +14,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class LoginResponse extends RestResponse{
     private Error error;
-    @JsonIgnore
     private String uuid;
     private String role;
 }
