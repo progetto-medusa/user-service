@@ -11,5 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CreatePMUserResponse extends RestResponse {
+    private String userUuid;
 }
 

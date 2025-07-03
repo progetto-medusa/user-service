@@ -67,7 +67,7 @@ public class PMUserService {
             userDTO.setConfirmationToken(uuid);
 
             createPMUserResponse = externalCallingService.createConfirmUser(userDTO);
-
+            createPMUserResponse.setUserUuid(userUuid);
         } catch (Exception e) {
             log.error("Service - createUser ERROR with message -> {}", e.getMessage());
             createPMUserResponse = pmUserConverter.createPMUserResponse(e);
